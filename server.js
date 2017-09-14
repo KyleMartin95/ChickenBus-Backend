@@ -14,7 +14,7 @@ const routes = require('./app/routes');
 app.use('/', routes); // configure our routes
 
 // set port and start app on 8080======================
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 app.listen(port);
 
 console.log('Listening to port: ' + port);
