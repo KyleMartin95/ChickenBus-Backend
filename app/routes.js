@@ -2,9 +2,9 @@ const express = require('express');
 var router = express.Router();
 
 router
-    .route('/')
+    .route('/api')
     .get((req, res) => {
-        res.send("hello");
+        res.send('hello world');
     });
 
 
