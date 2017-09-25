@@ -5,12 +5,14 @@ const path = require('path');
 
 const app = express();
 
+require('./app/db/database'); // connect to db
+
 app.use(morgan('dev'));
 
 app.use(bodyParser.json());//body-parser
 app.use(bodyParser.urlencoded({extended: true}));
 
-const routes = require('./app/routes');
+const routes = require('./app/api-router');
 app.use('/', routes); // configure our routes
 
 // set port and start app on 8080======================
