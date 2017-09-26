@@ -8,5 +8,10 @@ router
         res.send('hello world');
     });
 
+router
+    .route('/api/test')
+    .get((req, res) => {
+        routeController.create(req,res);
+    });
 
 module.exports = router;
