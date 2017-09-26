@@ -2,18 +2,16 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var routeSchema = new Schema({
-    type: {type: String},
+    name: String,
     geometry : {
         type: {type: String},
         coordinates : {
-            type : [Number],
-            index : '2dsphere',
+            type : [],
             required: true
         }
-    },
-    properties : {
-        name : String
     }
 });
+
+routeSchema.index({geometry: '2dsphere'});
 
 mongoose.model('Route', routeSchema);

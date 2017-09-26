@@ -4,33 +4,41 @@ const Route = mongoose.model('Route');
 module.exports = {
 
     find: (req, res) => {
-        // Route.findOne({'properties.name': 'test'}, 'geometry.coordinates', function(err, route){
-        //     res.json(route);
-        // });
-
         Route.find({}, function(err, routes){
-            res.json(routes);
+            if(err){
+                console.log(err);
+                res.send(err);
+            }else{
+                res.json(routes);
+            }
         });
     },
 
     create: (req, res) => {
+        //for test purposes for now
         Route.create({
-            type: 'Feature',
-            properties: {
-                name: 'create test'
-            },
+            name: 'New Test',
             geometry: {
                 type: 'LineString',
                 coordinates: [
                     [
-                        -86.25503540039061,
-                        12.113935335754642
+                        -86.3,
+                        12.3
+                    ],
+                    [
+                        86.1,
+                        13.1
+                    ],
+                    [
+                        86.0,
+                        13.0
                     ]
                 ]
             }
         }, function(err,route){
             if(err){
                 console.log(err);
+                res.send(err);
             }else{
                 res.json(route);
             }

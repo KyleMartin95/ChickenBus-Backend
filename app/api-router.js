@@ -1,5 +1,5 @@
 const express = require('express');
-const routeController = require('./controllers/routes');
+const routeController = require('./controllers/RouteController');
 var router = express.Router();
 
 router
@@ -11,7 +11,7 @@ router
 router
     .route('/api/test')
     .get((req, res) => {
-        routeController.create(req,res);
+        routeController.find(req,res);
     });
 
 module.exports = router;
