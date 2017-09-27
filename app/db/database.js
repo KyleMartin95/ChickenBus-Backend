@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+console.log(process.env.MONGODB_SERVICE_HOST+ ' ' + process.env.MONGODB_SERVICE_PORT + ' ' + process.env.MONGODB_USER + ' ' + process.env.MONGODB_PASSWORD);
+
 var connectionURI;
 if(process.env.NODE_ENV == 'production'){
     connectionURI = 'mongodb://' + process.env.MONGODB_SERVICE_HOST + ':' + process.env.MONGODB_SERVICE_PORT;
