@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "eslint server.js && eslint ./app/ && nodemon server.js",
+    "dev": "eslint server.js && eslint ./app/ && SET NODE_ENV=development && nodemon server.js",
+    "start": "NODE_ENV=production node server.js",
     "sequelize": "sequelize init",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

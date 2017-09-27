@@ -1,14 +1,24 @@
-var mongoose = require('mongoose');
-var dburl = process.env.DB_URL || 'mongodb://localhost:27017/ChickenBus';
+const mongoose = require('mongoose');
 
-mongoose.connect(dburl);
+var connectionURI;
+if(process.env.NODE_ENV == 'production'){
+    connectionURI = 'mongodb://' + process.env.MONGODB_SERVICE_HOST + ':' + process.env.MONGODB_SERVICE_PORT;
+    const connectionOptions = {
+        user: process.env.MONGODB_USER,
+        pass: process.env.MONGODB_PASSWORD
+    };
+    mongoose.connect(connectionURI, connectionOptions);
+}else{
+    connectionURI = 'mongodb://localhost:27017/ChickenBus';
+    mongoose.connect(connectionURI);
+}
 
 mongoose.connection.on('connected', function(){
-    console.log('Mongoose connected to: ' + dburl);
+    console.log('Mongoose connected to: ' + connectionURI);
 });
 
 mongoose.connection.on('disconnected', function(){
-    console.log('Mongoose disconnected from: ' + dburl);
+    console.log('Mongoose disconnected from: ' +connectionURI);
 });
 
 mongoose.connection.on('error', function(err){
