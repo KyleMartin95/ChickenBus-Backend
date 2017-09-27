@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var dburl = 'mongodb://localhost:27017/ChickenBus';
+var dburl = process.env.DB_URL || 'mongodb://localhost:27017/ChickenBus';
 
 mongoose.connect(dburl);
 
