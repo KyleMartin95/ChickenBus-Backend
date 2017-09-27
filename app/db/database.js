@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
-console.log(process.env.MONGODB_SERVICE_HOST+ ' ' + process.env.MONGODB_SERVICE_PORT + ' ' + process.env.MONGODB_USER + ' ' + process.env.MONGODB_PASSWORD);
+console.log(process.env.MONGODB_SERVICE_HOST+ ' ' + process.env.MONGODB_SERVICE_PORT + ' ' + process.env.MONGODB_USER + ' ' + process.env.MONGODB_PASSWORD + ' ' + process.env.MONGODB_NAME);
 
 var connectionURI;
 if(process.env.NODE_ENV == 'production'){
-    connectionURI = 'mongodb://' + process.env.MONGODB_SERVICE_HOST + ':' + process.env.MONGODB_SERVICE_PORT;
+    connectionURI = 'mongodb://' + process.env.MONGODB_SERVICE_HOST + ':' + process.env.MONGODB_SERVICE_PORT + '/' + process.env.MONGODB_NAME;
     const connectionOptions = {
         user: process.env.MONGODB_USER,
         pass: process.env.MONGODB_PASSWORD
