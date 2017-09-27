@@ -12,7 +12,7 @@ mongoose.connection.on('disconnected', function(){
 });
 
 mongoose.connection.on('error', function(err){
-    console.log('Mongoose error' + error);
+    console.log('Mongoose error' + err);
 });
 
 process.on('SIGINT', function(){
