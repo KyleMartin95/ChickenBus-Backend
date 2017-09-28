@@ -15,8 +15,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 const routes = require('./app/api-router');
 app.use('/', routes); // configure our routes
 
-// set port and start app on 8080======================
-const port = process.env.PORT || 8080;
+// set port and start app on 3000======================
+const port = process.env.PORT || 3000;
 app.listen(port);
 
 console.log('Listening to port: ' + port);
