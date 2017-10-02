@@ -16,8 +16,8 @@ module.exports = {
     },
 
     findNear: (req, res) => {
-        let long = parseInt(req.query.long);
-        let lat = parseInt(req.query.lat);
+        var long = parseInt(req.query.long);
+        var lat = parseInt(req.query.lat);
 
         Stop.aggregate(
             [
