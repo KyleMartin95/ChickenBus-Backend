@@ -49,3 +49,4 @@ process.once('SIGUSR2', function(){
 });
 
 require('./models/Route.js');
+require('./models/Stop.js');

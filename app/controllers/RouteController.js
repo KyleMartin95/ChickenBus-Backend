@@ -14,10 +14,25 @@ module.exports = {
         });
     },
 
+    findById: (id) => {
+        return new Promise(function(resolve, reject){
+            Route.find({
+                _id: id
+            }, function(err, route){
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(route);
+                }
+            });
+        });
+    },
+
     create: (req, res) => {
+        console.log();
         //for test purposes for now
         Route.create({
-            name: 'New Test',
+            type: 'Feature',
             geometry: {
                 type: 'LineString',
                 coordinates: [
@@ -32,6 +47,10 @@ module.exports = {
                     [
                         86.0,
                         13.0
+                    ],
+                    [
+                        80.0,
+                        14.02
                     ]
                 ]
             }
