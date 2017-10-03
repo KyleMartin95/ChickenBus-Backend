@@ -16,15 +16,17 @@ module.exports = {
     },
 
     findNear: (req, res) => {
-        var long = parseInt(req.query.long);
-        var lat = parseInt(req.query.lat);
+        var long = Number(req.query.lngOrig, 10);
+        var lat = Number(req.query.latOrig, 10);
+        const coords = [long, lat];
+        console.log(coords);
 
         Stop.aggregate(
             [
                 { '$geoNear': {
                     'near': {
                         'type': 'Point',
-                        'coordinates': [long, lat]
+                        'coordinates': coords
                     },
                     'distanceField': 'distance',
                     'spherical': true,
