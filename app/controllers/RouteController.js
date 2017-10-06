@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Route = mongoose.model('Route');
-
+const Stop = mongoose.model('Stop');
+const StopController = require('./StopController');
 module.exports = {
 
     find: (req, res) => {
@@ -26,6 +27,28 @@ module.exports = {
                 }
             });
         });
+    },
+
+    findNear: (req, res) => {
+        var lngOrig = Number(req.query.lngOrig, 10);
+        var latOrig = Number(req.query.latOrig, 10);
+        var lngDest = Number(req.query.lngDest, 10);
+        var latDest = Number(req.query.latDest, 10);
+
+        var stopsNearOrig;
+        var stopsNearDest;
+        StopController.findNear({lngOrig, latOrig})
+            .then((stops) => {
+                stopsNearOrig = stops;
+                return StopController.findNear({lngDest, latDest});
+            }).then((stops) => {
+                stopsNearDest = stops;
+            }).catch((err) => {
+                console.log(err);
+                res.send(err);
+            });
+
+
     },
 
     create: (req, res) => {

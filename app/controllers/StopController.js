@@ -15,38 +15,40 @@ module.exports = {
         });
     },
 
-    findNear: (req, res) => {
-        let long = parseInt(req.query.long);
-        let lat = parseInt(req.query.lat);
-
-        Stop.aggregate(
-            [
-                { '$geoNear': {
-                    'near': {
-                        'type': 'Point',
-                        'coordinates': [long, lat]
-                    },
-                    'distanceField': 'distance',
-                    'spherical': true,
-                    'maxDistance': 100000
-                }}
-            ], function(err, results){
-                if(err){
-                    console.log(err);
-                    res.send(err);
-                }else{
-                    console.log(results);
-                    RouteController.findById(results[0].properties.routes[0])
-                        .then(function(route){
-                            res.json(route);
-                        }).catch(function(err){
-                            console.log(err);
-                            res.sendStatus(500);
-                            res.send(err);
-                        });
+    findNear: (location) => {
+        return new Promise((resolve, reject) => {
+            var lng = location.lng;
+            var lat = location.lat;
+            Stop.aggregate(
+                [
+                    { '$geoNear': {
+                        'near': {
+                            'type': 'Point',
+                            'coordinates': [lng, lat]
+                        },
+                        'distanceField': 'distance',
+                        'spherical': true,
+                        'maxDistance': 100000
+                    }}
+                ], function(err, results){
+                    if(err){
+                        console.log(err);
+                        reject(err);
+                    }else{
+                        console.log(results);
+                        resolve(results);
+                        // RouteController.findById(results[0].properties.routes[0])
+                        //     .then(function(route){
+                        //         res.json(route);
+                        //     }).catch(function(err){
+                        //         console.log(err);
+                        //         res.sendStatus(500);
+                        //         res.send(err);
+                        //     });
+                    }
                 }
-            }
-        );
+            );
+        });
     },
 
     create: (req, res) => {
