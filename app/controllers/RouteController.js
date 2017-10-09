@@ -112,14 +112,12 @@ function findRoute(stopsNearOrig, stopsNearDest){
     var i,j;
     for(i = 0; i < stopsNearOrig.length; i++){
         for(j = 0; j < stopsNearDest.length; j++){
-            if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes)){
+            if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
                 return stopsNearOrig[i].properties.routes;
             }
         }
     }
-    if(i >= stopsNearOrig.length){ //did not find matching route
-        return false;
-    }
+    return false;
 }
 
 function chainError(err){

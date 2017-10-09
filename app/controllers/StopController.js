@@ -29,9 +29,11 @@ module.exports = {
                             },
                             'distanceField': 'distance',
                             'spherical': true,
-                            'maxDistance': 100,
-                            'query': '$routes'
+                            'maxDistance': 1000
                         }
+                    },
+                    {
+                        '$sort':{'distance': 1}
                     },
                     {
                         '$unwind': '$properties.routes'
@@ -43,14 +45,6 @@ module.exports = {
                     }else{
                         console.log(results);
                         resolve(results);
-                        // RouteController.findById(results[0].properties.routes[0])
-                        //     .then(function(route){
-                        //         res.json(route);
-                        //     }).catch(function(err){
-                        //         console.log(err);
-                        //         res.sendStatus(500);
-                        //         res.send(err);
-                        //     });
                     }
                 }
             );
