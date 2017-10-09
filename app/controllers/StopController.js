@@ -21,15 +21,21 @@ module.exports = {
             var lat = location.lat;
             Stop.aggregate(
                 [
-                    { '$geoNear': {
-                        'near': {
-                            'type': 'Point',
-                            'coordinates': [lng, lat]
-                        },
-                        'distanceField': 'distance',
-                        'spherical': true,
-                        'maxDistance': 100000
-                    }}
+                    {
+                        '$geoNear': {
+                            'near': {
+                                'type': 'Point',
+                                'coordinates': [lng, lat]
+                            },
+                            'distanceField': 'distance',
+                            'spherical': true,
+                            'maxDistance': 100,
+                            'query': '$routes'
+                        }
+                    },
+                    {
+                        '$unwind': '$properties.routes'
+                    }
                 ], function(err, results){
                     if(err){
                         console.log(err);

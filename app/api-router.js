@@ -25,7 +25,7 @@ router
 router
     .route('/api/routes/find-near')
     .get((req, res) => {
-        stopController.findNear(req, res);
+        routeController.findNear(req, res);
     });
 
 /**********************Stops**************************/
