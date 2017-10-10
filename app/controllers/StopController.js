@@ -15,40 +15,40 @@ module.exports = {
         });
     },
 
-    findNear: (req, res) => {
-        var long = Number(req.query.lngOrig, 10);
-        var lat = Number(req.query.latOrig, 10);
-        const coords = [long, lat];
-        console.log(coords);
-
-        Stop.aggregate(
-            [
-                { '$geoNear': {
-                    'near': {
-                        'type': 'Point',
-                        'coordinates': coords
+    findNear: (location) => {
+        return new Promise((resolve, reject) => {
+            var lng = location.lng;
+            var lat = location.lat;
+            Stop.aggregate(
+                [
+                    {
+                        '$geoNear': {
+                            'near': {
+                                'type': 'Point',
+                                'coordinates': [lng, lat]
+                            },
+                            'distanceField': 'distance',
+                            'spherical': true,
+                            'maxDistance': 1000
+                        }
                     },
-                    'distanceField': 'distance',
-                    'spherical': true,
-                    'maxDistance': 100000
-                }}
-            ], function(err, results){
-                if(err){
-                    console.log(err);
-                    res.send(err);
-                }else{
-                    console.log(results);
-                    RouteController.findById(results[0].properties.routes[0])
-                        .then(function(route){
-                            res.json(route);
-                        }).catch(function(err){
-                            console.log(err);
-                            res.sendStatus(500);
-                            res.send(err);
-                        });
+                    {
+                        '$sort':{'distance': 1}
+                    },
+                    {
+                        '$unwind': '$properties.routes'
+                    }
+                ], function(err, results){
+                    if(err){
+                        console.log(err);
+                        reject(err);
+                    }else{
+                        console.log(results);
+                        resolve(results);
+                    }
                 }
-            }
-        );
+            );
+        });
     },
 
     create: (req, res) => {

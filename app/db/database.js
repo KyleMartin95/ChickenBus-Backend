@@ -11,8 +11,12 @@ if(process.env.NODE_ENV == 'production'){
     };
     mongoose.connect(connectionURI, connectionOptions);
 }else{
-    connectionURI = 'mongodb://localhost:27017/ChickenBus';
-    mongoose.connect(connectionURI);
+    connectionURI = 'mongodb://127.0.0.1:27017/chickenbus';
+    const connectionOptions = {
+        user: 'userVCU',
+        pass: 'VAoaFA1OA8whAKGc'
+    };
+    mongoose.connect(connectionURI, connectionOptions);
 }
 
 mongoose.connection.on('connected', function(){
