@@ -5,14 +5,14 @@ console.log(process.env.MONGODB_SERVICE_HOST+ ' ' + process.env.MONGODB_SERVICE_
 var connectionURI;
 if(process.env.NODE_ENV == 'production'){
     connectionURI = 'mongodb://' + process.env.MONGODB_SERVICE_HOST + ':' + process.env.MONGODB_SERVICE_PORT + '/' + process.env.MONGODB_NAME;
-    const connectionOptions = {
+    var connectionOptions = {
         user: process.env.MONGODB_USER,
         pass: process.env.MONGODB_PASSWORD
     };
     mongoose.connect(connectionURI, connectionOptions);
 }else{
     connectionURI = 'mongodb://127.0.0.1:27017/chickenbus';
-    const connectionOptions = {
+    var connectionOptions = {
         user: 'userVCU',
         pass: 'VAoaFA1OA8whAKGc'
     };
