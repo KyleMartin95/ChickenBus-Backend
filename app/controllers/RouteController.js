@@ -5,13 +5,14 @@ const StopController = require('./StopController');
 var RouteController = {
 
     find: (req, res) => {
-        Route.find({}, function(err, routes){
-            if(err){
-                console.log(err);
-                res.send(err);
-            }else{
-                res.json(routes);
-            }
+        return new Promise((resolve, reject) => {
+            Route.find({}, function(err, routes){
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(routes);
+                }
+            });
         });
     },
 
@@ -30,83 +31,64 @@ var RouteController = {
     },
 
     findNear: (req, res) => {
-        var lngOrig = Number(req.query.lngOrig, 10);
-        var latOrig = Number(req.query.latOrig, 10);
-        var lngDest = Number(req.query.lngDest, 10);
-        var latDest = Number(req.query.latDest, 10);
+        return new Promise((resolve, reject) => {
+            var lngOrig = Number(req.query.lngOrig, 10);
+            var latOrig = Number(req.query.latOrig, 10);
+            var lngDest = Number(req.query.lngDest, 10);
+            var latDest = Number(req.query.latDest, 10);
 
-        var stopsNearOrig = [];
-        var stopsNearDest = [];
-        StopController.findNear({lng: lngOrig, lat: latOrig})
-            .then((stops) => {
-                stopsNearOrig = stops;
-
-                // stopsNearOrig = concatArray(stops);
-                return StopController.findNear({lng: lngDest, lat: latDest});
-            }).then((stops) => {
-                stopsNearDest = stops;
-                routeId = findRoute(stopsNearOrig, stopsNearDest);
-                if(routeId === false){
-                    res.json({});
-                }
-                return RouteController.findById(routeId);
-                //TODO: get stop info
-            }).then((route) => {
-                console.log(route);
-                res.json(route);
-            }).catch((err) => {
-                console.log(err);
-                res.sendStatus(500);
-                res.send(err);
-            });
+            var stopsNearOrig = [];
+            var stopsNearDest = [];
+            StopController.findNear({lng: lngOrig, lat: latOrig})
+                .then((stops) => {
+                    stopsNearOrig = stops;
+                    return StopController.findNear({lng: lngDest, lat: latDest});
+                }).then((stops) => {
+                    stopsNearDest = stops;
+                    routeId = findRoute(stopsNearOrig, stopsNearDest);
+                    if(routeId === false){
+                        res.json({});
+                    }
+                    return RouteController.findById(routeId);
+                    //TODO: get stop info
+                }).then((route) => {
+                    resolve(route);
+                }).catch((err) => {
+                    reject(err);
+                });
+        });
     },
 
     create: (req, res) => {
-        console.log();
-        //for test purposes for now
-        Route.create({
-            type: 'Feature',
-            geometry: {
-                type: 'LineString',
-                coordinates: [
-                    [
-                        -86.3,
-                        12.3
-                    ],
-                    [
-                        86.1,
-                        13.1
-                    ],
-                    [
-                        86.0,
-                        13.0
-                    ],
-                    [
-                        80.0,
-                        14.02
-                    ]
-                ]
-            }
-        }, function(err,route){
-            if(err){
-                console.log(err);
-                res.send(err);
-            }else{
-                res.json(route);
-            }
+        return new Promise((resolve, reject) => {
+            var routeName = req.body.name;
+            var routeCost = req.body.cost;
+
+            Route.create({
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: []
+                },
+                properties: {
+                    name: routeName,
+                    cost: routeCost
+                }
+            }, function(err,route){
+                if(err){
+                    reject(err);
+                }else{
+                    var routeId = route._id;
+                    var routeStops = req.body.stops;
+                    addStopsToRoute(routeId, routeStops);
+                    resolve(route);
+                }
+            });
         });
     }
 };
 
 module.exports = RouteController;
-
-function concatArray(arrayToConcat){
-    var newArr = [];
-    for(var i = 0; i < arrayToConcat.length; i++){
-        newArr = newArr.concat(arrayToConcat[i]);
-    }
-    return newArr;
-}
 
 function findRoute(stopsNearOrig, stopsNearDest){
     var i,j;
@@ -118,6 +100,20 @@ function findRoute(stopsNearOrig, stopsNearDest){
         }
     }
     return false;
+}
+
+function addStopsToRoute(routeId, routeStops){
+    var sequence = Promise.resolve();
+
+    routeStops.forEach(function(stop){
+        sequence = sequence.then(function(){
+            return getImage(stop);
+        }).then(function(createdStop){
+            //do nothing
+        }).catch(function(err){
+            console.log(err);
+        });
+    });
 }
 
 function chainError(err){
