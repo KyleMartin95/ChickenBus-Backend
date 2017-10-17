@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Stop = mongoose.model('Stop');
 const RouteController = require('./RouteController');
+const googleMapsClient = require('@google/maps').createClient({
+    key: 'AIzaSyAbiwYsHl4MCJ1-Dwkcc3uChWMmYjv5Qp4'
+});
 
 module.exports = {
 
@@ -53,6 +56,19 @@ module.exports = {
         });
     },
 
+    findCord: (address) =>{
+        return new Promise((resolve, reject) =>{
+            getCord({address}, function(err,location){
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(location);
+                }
+            });   
+        });
+    },
+
+
     create: (routeId, stop) => {
         return new Promise((resolve, reject) => {
             Stop.create({
@@ -74,3 +90,13 @@ module.exports = {
         });
     }
 };
+
+function getCord(address){
+    googleMapsClient.geocode({
+        address: address
+    }, function(err, response) {
+        if (!err) {
+            return response.json.results.geometry.location;
+        }
+    });
+}

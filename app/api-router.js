@@ -71,4 +71,18 @@ router
             });
     });
 
+router
+    .route('/api/stops/coordinate')
+    .get((req, res) => {
+        stopController.findCord(req, res)
+            .then((location) => {
+                res.send(location);
+                res.json(location);
+            }).catch((err) => {
+                res.send('failed');                
+                console.log(err);
+                res.sendStatus(500);
+            });
+    });
+
 module.exports = router;
