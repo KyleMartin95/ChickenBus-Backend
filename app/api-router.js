@@ -15,7 +15,7 @@ router
     .get((req, res) => {
         routeController.find(req,res)
             .then((routes) => {
-                res.sendStatus(200).json(routes);
+                res.status(200).json(routes);
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
@@ -24,10 +24,10 @@ router
 
 router
     .route('/api/routes/create')
-    .get((req, res) => {
+    .post((req, res) => {
         routeController.create(req, res)
             .then((route) => {
-                res.sendStatus(200).json(routes);
+                res.status(200).json(route);
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
@@ -39,7 +39,7 @@ router
     .get((req, res) => {
         routeController.findNear(req, res)
             .then((routes) => {
-                res.sendStatus(200).json(routes);
+                res.status(200).json(routes);
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
@@ -52,7 +52,7 @@ router
     .get((req, res) => {
         stopController.findNear(req, res)
             .then((stops) => {
-                res.sendStatus(200).json(stops);
+                res.status(200).json(stops);
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
@@ -64,7 +64,7 @@ router
     .get((req, res) => {
         stopController.create(req, res)
             .then((stop) => {
-                res.json(stop);
+                res.status(200).json(stop);
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
