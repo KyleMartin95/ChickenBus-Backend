@@ -76,10 +76,10 @@ router
     .get((req, res) => {
         stopController.findCord(req, res)
             .then((location) => {
-                res.send(location);
+                // res.send(location);
                 res.json(location);
             }).catch((err) => {
-                res.send('failed');                
+                // res.send('failed');                
                 console.log(err);
                 res.sendStatus(500);
             });
