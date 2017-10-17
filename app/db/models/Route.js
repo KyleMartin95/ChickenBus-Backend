@@ -5,9 +5,9 @@ var routeSchema = new Schema({
     type: String,
     geometry : {
         type: {type: String},
+        required: false,
         coordinates : {
-            type : [],
-            required: true
+            type : []
         }
     },
     properties: {

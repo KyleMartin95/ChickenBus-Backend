@@ -39,10 +39,10 @@ var RouteController = {
 
             var stopsNearOrig = [];
             var stopsNearDest = [];
-            StopController.findNear({lng: lngOrig, lat: latOrig})
+            StopController.findNear({lng: lngOrig, lat: latOrig}, true)
                 .then((stops) => {
                     stopsNearOrig = stops;
-                    return StopController.findNear({lng: lngDest, lat: latDest});
+                    return StopController.findNear({lng: lngDest, lat: latDest}, true);
                 }).then((stops) => {
                     stopsNearDest = stops;
                     routeId = findRoute(stopsNearOrig, stopsNearDest);
@@ -63,12 +63,13 @@ var RouteController = {
         return new Promise((resolve, reject) => {
             var routeName = req.body.name;
             var routeCost = req.body.cost;
+            var routeStops = req.body.stops;
 
             Route.create({
                 type: 'Feature',
                 geometry: {
                     type: 'LineString',
-                    coordinates: []
+                    coordinates: [[0,0],[1,1]]
                 },
                 properties: {
                     name: routeName,
@@ -79,9 +80,13 @@ var RouteController = {
                     reject(err);
                 }else{
                     var routeId = route._id;
-                    var routeStops = req.body.stops;
-                    addStopsToRoute(routeId, routeStops);
-                    resolve(route);
+                    addStopsToRoute(routeId, routeStops)
+                        .then(() => {
+                            console.log('add stops to route then called!!!!!!!!!');
+                            resolve(route);
+                        }).catch((err) => {
+                            reject(err);
+                        });
                 }
             });
         });
@@ -89,6 +94,8 @@ var RouteController = {
 };
 
 module.exports = RouteController;
+
+/************************Helper functions *************************************/
 
 function findRoute(stopsNearOrig, stopsNearDest){
     var i,j;
@@ -103,15 +110,30 @@ function findRoute(stopsNearOrig, stopsNearDest){
 }
 
 function addStopsToRoute(routeId, routeStops){
-    var sequence = Promise.resolve();
+    return new Promise((resolve, reject) => {
+        var sequence = Promise.resolve();
+        var completed = 0;
 
-    routeStops.forEach(function(stop){
-        sequence = sequence.then(function(){
-            return getImage(stop);
-        }).then(function(createdStop){
-            //do nothing
-        }).catch(function(err){
-            console.log(err);
+        routeStops.forEach((stop) => {
+            var lng = Number(stop.coordinates[0], 10);
+            var lat = Number(stop.coordinates[1], 10);
+
+            sequence = sequence.then(() => {
+                return StopController.findNear({lng: lng, lat: lat}, false); // check to  see if the stop is already a stop
+            }).then((stopsInProximity) => {
+                if(stopsInProximity.length === 0){
+                    return StopController.create(routeId, stop);                    // if it is not already a stop, create it
+                }else{
+                    return StopController.addRoute(routeId, stopsInProximity[0]._id);  // if it is, update the routes array in the closest stop to contain the id of the route that is being created
+                }
+            }).then((stop) => {
+                completed++;
+                if(completed === routeStops.length){
+                    resolve();
+                }
+            }).catch((err) => {
+                reject(err);
+            });
         });
     });
 }

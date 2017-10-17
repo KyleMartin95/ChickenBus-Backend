@@ -17,39 +17,67 @@ module.exports = {
         });
     },
 
-    findNear: (location) => {
+    findNear: (location, unwind) => {
         return new Promise((resolve, reject) => {
             var lng = location.lng;
             var lat = location.lat;
-            Stop.aggregate(
-                [
-                    {
-                        '$geoNear': {
-                            'near': {
-                                'type': 'Point',
-                                'coordinates': [lng, lat]
-                            },
-                            'distanceField': 'distance',
-                            'spherical': true,
-                            'maxDistance': 1000
+
+            if(unwind){
+                Stop.aggregate(
+                    [
+                        {
+                            '$geoNear': {
+                                'near': {
+                                    'type': 'Point',
+                                    'coordinates': [lng, lat]
+                                },
+                                'distanceField': 'distance',
+                                'spherical': true,
+                                'maxDistance': 1000
+                            }
+                        },
+                        {
+                            '$sort':{'distance': 1}
+                        },
+                        {
+                            '$unwind': '$properties.routes'
                         }
-                    },
-                    {
-                        '$sort':{'distance': 1}
-                    },
-                    {
-                        '$unwind': '$properties.routes'
+                    ], function(err, results){
+                        if(err){
+                            console.log(err);
+                            reject(err);
+                        }else{
+                            resolve(results);
+                        }
                     }
-                ], function(err, results){
-                    if(err){
-                        console.log(err);
-                        reject(err);
-                    }else{
-                        console.log(results);
-                        resolve(results);
+                );
+            }else{
+                Stop.aggregate(
+                    [
+                        {
+                            '$geoNear': {
+                                'near': {
+                                    'type': 'Point',
+                                    'coordinates': [lng, lat]
+                                },
+                                'distanceField': 'distance',
+                                'spherical': true,
+                                'maxDistance': 1000
+                            }
+                        },
+                        {
+                            '$sort':{'distance': 1}
+                        }
+                    ], function(err, results){
+                        if(err){
+                            console.log(err);
+                            reject(err);
+                        }else{
+                            resolve(results);
+                        }
                     }
-                }
-            );
+                );
+            }
         });
     },
 
@@ -62,7 +90,7 @@ module.exports = {
                     coordinates: stop.coordinates
                 },
                 properties: {
-                    routes: ['59d28f6843a9de315ce20323']
+                    routes: []
                 }
             }, function(err,stop){
                 if(err){
@@ -71,6 +99,22 @@ module.exports = {
                     resolve(stop);
                 }
             });
+        });
+    },
+
+    addRoute: (routeId, stopId) => {
+        return new Promise((resolve, reject) => {
+            Stop.update({_id: stopId},
+                {
+                    $push: {'properties.routes': routeId}
+                },
+                function(err, stop){
+                    if(err){
+                        reject(err);
+                    }else{
+                        resolve(stop);
+                    }
+                });
         });
     }
 };
