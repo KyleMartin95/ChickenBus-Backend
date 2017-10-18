@@ -104,7 +104,7 @@ module.exports = {
                     coordinates: stop.coordinates
                 },
                 properties: {
-                    routes: []
+                    routes: [routeId]
                 }
             }, function(err,stop){
                 if(err){
