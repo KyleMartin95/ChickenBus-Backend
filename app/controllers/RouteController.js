@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 const Route = mongoose.model('Route');
 const Stop = mongoose.model('Stop');
+
 const StopController = require('./StopController');
+const GoogleMapsController = require('./GoogleMapsController');
+
 var RouteController = {
 
     find: (req, res) => {
@@ -45,9 +48,9 @@ var RouteController = {
                     return StopController.findNear({lng: lngDest, lat: latDest}, true);
                 }).then((stops) => {
                     stopsNearDest = stops;
-                    routeId = findRoute(stopsNearOrig, stopsNearDest);
-                    if(routeId === false){
-                        res.json({});
+                    routeAndStops = findRoute(stopsNearOrig, stopsNearDest);
+                    if(routeAndStops.routeId === false){
+                        reject('No route found');
                     }
                     return RouteController.findById(routeId);
                     //TODO: get stop info
@@ -102,7 +105,12 @@ function findRoute(stopsNearOrig, stopsNearDest){
     for(i = 0; i < stopsNearOrig.length; i++){
         for(j = 0; j < stopsNearDest.length; j++){
             if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
-                return stopsNearOrig[i].properties.routes;
+                var routeAndStops = {
+                    routeId: stopsNearOrig[i].properties.routes,
+                    origStop: stopsNearOrig[i],
+                    destStop: stopsNearDest[j]
+                };
+                return routeAndStops;
             }
         }
     }
