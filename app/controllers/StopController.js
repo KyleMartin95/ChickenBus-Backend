@@ -86,13 +86,13 @@ module.exports = {
 
     findCord: (address) =>{
         return new Promise((resolve, reject) =>{
-            getCord({address}, function(err,location){
-                if(err){
+            getCoords(address)
+                .then((coords) => {
+                    console.log('COORDS', coords);
+                    resolve(coords);
+                }).catch((err) => {
                     reject(err);
-                }else{
-                    resolve(location);
-                }
-            });   
+                });
         });
     },
 
@@ -135,12 +135,17 @@ module.exports = {
     }
 };
 
-function getCord(address){
-    googleMapsClient.geocode({
-        address: address
-    }, function(err, response) {
-        if (!err) {
-            return response.json.results.geometry.location;
-        }
+function getCoords(address){
+    return new Promise((resolve, reject) => {
+        console.log('ADDRESS', address);
+        googleMapsClient.geocode({
+            address: address
+        }, function(err, response) {
+            if (err) {
+                reject(err);
+            }else{
+                resolve(response.json.results[0].geometry.location);
+            }
+        });
     });
 }

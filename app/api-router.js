@@ -74,12 +74,12 @@ router
 router
     .route('/api/stops/coordinate')
     .get((req, res) => {
-        stopController.findCord(req, res)
+        stopController.findCord(req.query.address, res)
             .then((location) => {
                 // res.send(location);
                 res.json(location);
             }).catch((err) => {
-                // res.send('failed');                
+                // res.send('failed');
                 console.log(err);
                 res.sendStatus(500);
             });
