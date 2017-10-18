@@ -41,17 +41,19 @@ var GoogleMapsController = {
                 destination: dest
             };
 
-            googleMapsClient.directions(query, (err, response) =>{
-                if (!err) {
-                    resolve(response);
-                } else if (err === 'timeout') {
-                    reject(err);
-                } else if (err.json) {
-                    reject(err);
-                } else {
-                    reject(err);
-                }
-            });
+            resolve(query);
+
+            // googleMapsClient.directions(query, (err, response) =>{
+            //     if (!err) {
+            //         resolve(response);
+            //     } else if (err === 'timeout') {
+            //         reject(err);
+            //     } else if (err.json) {
+            //         reject(err);
+            //     } else {
+            //         reject(err);
+            //     }
+            // });
         });
     }
 
