@@ -48,14 +48,14 @@ var RouteController = {
                     return StopController.findNear({lng: lngDest, lat: latDest}, true);
                 }).then((stops) => {
                     stopsNearDest = stops;
-                    routeAndStops = findRoute(stopsNearOrig, stopsNearDest);
+                    var routeAndStops = findRoute(stopsNearOrig, stopsNearDest);
+                    console.log(routeAndStops);
                     if(routeAndStops.routeId === false){
                         reject('No route found');
                     }
-                    return RouteController.findById(routeId);
-                    //TODO: get stop info
-                }).then((route) => {
-                    resolve(route);
+                    return GoogleMapsController.getDirections({orig: routeAndStops.origStop.geometry.coordinates, dest: routeAndStops.destStop.geometry.coordinates});
+                }).then((directions) => {
+                    resolve(directions);
                 }).catch((err) => {
                     reject(err);
                 });
@@ -110,6 +110,7 @@ function findRoute(stopsNearOrig, stopsNearDest){
                     origStop: stopsNearOrig[i],
                     destStop: stopsNearDest[j]
                 };
+                console.log('ROUTE AND STOPS: ', routeAndStops);
                 return routeAndStops;
             }
         }

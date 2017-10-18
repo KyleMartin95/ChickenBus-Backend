@@ -38,8 +38,9 @@ router
     .route('/api/routes/find-near')
     .get((req, res) => {
         routeController.findNear(req, res)
-            .then((routes) => {
-                res.status(200).json(routes);
+            .then((directions) => {
+                console.log('DIRECTIONS', directions);
+                res.status(200).json(directions);
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
