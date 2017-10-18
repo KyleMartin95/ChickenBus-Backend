@@ -42,7 +42,7 @@ router
                 res.status(200).json(directions);
             }).catch((err) => {
                 console.log(err);
-                res.sendStatus(500);
+                res.status(200).send(err);
             });
     });
 

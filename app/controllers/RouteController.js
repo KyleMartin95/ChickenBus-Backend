@@ -52,8 +52,12 @@ var RouteController = {
                     console.log(routeAndStops);
                     if(routeAndStops.routeId === false){
                         reject('No route found');
+                    }else{
+                        return GoogleMapsController.getDirections({
+                            orig: routeAndStops.origStop.geometry.coordinates,
+                            dest: routeAndStops.destStop.geometry.coordinates
+                        });
                     }
-                    return GoogleMapsController.getDirections({orig: routeAndStops.origStop.geometry.coordinates, dest: routeAndStops.destStop.geometry.coordinates});
                 }).then((directions) => {
                     resolve(directions);
                 }).catch((err) => {
@@ -102,10 +106,11 @@ module.exports = RouteController;
 
 function findRoute(stopsNearOrig, stopsNearDest){
     var i,j;
+    var routeAndStops;
     for(i = 0; i < stopsNearOrig.length; i++){
         for(j = 0; j < stopsNearDest.length; j++){
             if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
-                var routeAndStops = {
+                routeAndStops = {
                     routeId: stopsNearOrig[i].properties.routes,
                     origStop: stopsNearOrig[i],
                     destStop: stopsNearDest[j]
@@ -115,7 +120,12 @@ function findRoute(stopsNearOrig, stopsNearDest){
             }
         }
     }
-    return false;
+    routeAndStops = {
+        routeId: false,
+        origStop: '',
+        destStop: ''
+    };
+    return routeAndStops;
 }
 
 function addStopsToRoute(routeId, routeStops){

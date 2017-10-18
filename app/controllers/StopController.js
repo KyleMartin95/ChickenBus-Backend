@@ -34,7 +34,7 @@ module.exports = {
                                 },
                                 'distanceField': 'distance',
                                 'spherical': true,
-                                'maxDistance': 100
+                                'maxDistance': 1000
                             }
                         },
                         {
