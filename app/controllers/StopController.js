@@ -132,3 +132,14 @@ module.exports = {
         });
     }
 };
+
+//TODO:
+//Stops need additional param for order of this stop in route
+//ex. managua, 2
+//move all API call to backend, specifically
+//  frontend search with lat lng for dest, ori
+//  comes back do Findnear with route
+//      route does findnear of stop and return: route, stops' ID
+//      use ID to get coordinate and send to direction
+//          direction comes back with direction info
+//          send direction info to frontend.
