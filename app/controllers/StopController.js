@@ -48,6 +48,7 @@ module.exports = {
                             console.log(err);
                             reject(err);
                         }else{
+                            console.log(results);
                             resolve(results);
                         }
                     }
@@ -71,7 +72,6 @@ module.exports = {
                         }
                     ], function(err, results){
                         if(err){
-                            console.log(err);
                             reject(err);
                         }else{
                             resolve(results);
@@ -86,7 +86,6 @@ module.exports = {
         return new Promise((resolve, reject) =>{
             GoogleMapsController.getCoords(address)
                 .then((coords) => {
-                    console.log('COORDS', coords);
                     resolve(coords);
                 }).catch((err) => {
                     reject(err);
@@ -129,6 +128,34 @@ module.exports = {
                         resolve(stop);
                     }
                 });
+        });
+    },
+
+    findStopsInRadius: (radius, midpoint) => {
+        return new Promise((resolve, reject) => {
+            Stop.aggregate(
+                [
+                    {
+                        '$match': {
+                            'geometry.coordinates': {
+                                '$geoWithin': {
+                                    '$center': [[midpoint.lng, midpoint.lat], radius]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        '$unwind': '$properties.routes'
+                    }
+                ], function(err, results){
+                    if(err){
+                        console.log(err);
+                        reject(err);
+                    }else{
+                        resolve(results);
+                    }
+                }
+            );
         });
     }
 };

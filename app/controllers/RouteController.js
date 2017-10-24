@@ -35,29 +35,44 @@ var RouteController = {
 
     findNear: (req, res) => {
         return new Promise((resolve, reject) => {
-            var lngOrig = Number(req.query.lngOrig, 10);
-            var latOrig = Number(req.query.latOrig, 10);
-            var lngDest = Number(req.query.lngDest, 10);
-            var latDest = Number(req.query.latDest, 10);
+            var origDestCoords = {
+                lngOrig: Number(req.query.lngOrig, 10),
+                latOrig: Number(req.query.latOrig, 10),
+                lngDest: Number(req.query.lngDest, 10),
+                latDest: Number(req.query.latDest, 10)
+            };
 
             var stopsNearOrig = [];
             var stopsNearDest = [];
-            StopController.findNear({lng: lngOrig, lat: latOrig}, true)
+
+            StopController.findNear({lng: origDestCoords.lngOrig, lat: origDestCoords.latOrig}, true)
                 .then((stops) => {
                     stopsNearOrig = stops;
-                    return StopController.findNear({lng: lngDest, lat: latDest}, true);
+                    return StopController.findNear({lng: origDestCoords.lngDest, lat: origDestCoords.latDest}, true);
                 }).then((stops) => {
                     stopsNearDest = stops;
-                    var routeAndStops = findRoute(stopsNearOrig, stopsNearDest);
-                    console.log(routeAndStops);
-                    if(routeAndStops.routeId === false){
+
+                    var routeAndStops = findRoute(stopsNearOrig, stopsNearDest, origDestCoords);
+
+                    if(routeAndStops.status === 0){
                         reject('No route found');
-                    }else{
-                        return GoogleMapsController.getDirections({
+                    }else if(routeAndStops.status === 1){
+                        return [GoogleMapsController.getDirections({
                             orig: routeAndStops.origStop.geometry.coordinates,
                             dest: routeAndStops.destStop.geometry.coordinates
+                        })];
+                    }else{
+                        var firstRoute = GoogleMapsController.getDirections({
+                            orig: routeAndStops.origStop.geometry.coordinates,
+                            dest: routeAndStops.midStop.geometry.coordinates
                         });
+                        var secondRoute = GoogleMapsController.getDirections({
+                            orig: routeAndStops.midStop.geometry.coordinates,
+                            dest: routeAndStops.destStop.geometry.coordinates
+                        });
+                        return [firstRoute, secondRoute];
                     }
+
                 }).then((directions) => {
                     resolve(directions);
                 }).catch((err) => {
@@ -76,7 +91,7 @@ var RouteController = {
                 type: 'Feature',
                 geometry: {
                     type: 'LineString',
-                    coordinates: [[0,0],[1,1]]
+                    coordinates: [[0,0],[1,1]] //place holder values...there has to be something there for the query to work
                 },
                 properties: {
                     name: routeName,
@@ -89,7 +104,6 @@ var RouteController = {
                     var routeId = route._id;
                     addStopsToRoute(routeId, routeStops)
                         .then(() => {
-                            console.log('add stops to route then called!!!!!!!!!');
                             resolve(route);
                         }).catch((err) => {
                             reject(err);
@@ -104,28 +118,118 @@ module.exports = RouteController;
 
 /************************Helper functions *************************************/
 
-function findRoute(stopsNearOrig, stopsNearDest){
+function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     var i,j;
     var routeAndStops;
     for(i = 0; i < stopsNearOrig.length; i++){
         for(j = 0; j < stopsNearDest.length; j++){
             if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
                 routeAndStops = {
+                    status: 1,
                     routeId: stopsNearOrig[i].properties.routes,
                     origStop: stopsNearOrig[i],
                     destStop: stopsNearDest[j]
                 };
-                console.log('ROUTE AND STOPS: ', routeAndStops);
                 return routeAndStops;
             }
         }
     }
-    routeAndStops = {
-        routeId: false,
-        origStop: '',
-        destStop: ''
-    };
-    return routeAndStops;
+    //no direct route found
+    return findConnection(stopsNearOrig, stopsNearDest, origDestCoords);
+}
+
+function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
+    var radius = findDistance(origDestCoords)/2;
+    var midpoint = findMidpoint(origDestCoords.lngOrig, origDestCoords.latOrig, origDestCoords.lngDest, origDestCoords.latDest);
+    //array of stops within circle of origin and destination
+    StopController.findStopsInRadius(radius, midpoint)
+        .then((stopsInRadius) => {
+            var orig2MidRouteAndStops = [];
+            for(i = 0; i < stopsNearOrig.length; i++){
+                for(j = 0; j < stopsInRadius.length; j++){
+                    if(stopsNearOrig[i].properties.routes.equals(stopsInRadius[j].properties.routes) && stopsNearOrig[i]._id != stopsInRadius[j]._id){
+                        orig2MidRouteAndStops.push({
+                            routeId: stopsNearOrig[i].properties.routes,
+                            origStop: stopsNearOrig[i],
+                            midStop: stopsInRadius[j]
+                        });
+                    }
+                }
+            }
+
+            // var mid2DestRouteAndStops = [];
+            for(i = 0; i < orig2MidRouteAndStops.length; i++){
+                for(j = 0; j < stopsNearDest.length; j++){
+                    if(orig2MidRouteAndStops[i].midStop.roperties.routes.equals(stopsNearDest[j].properties.routes) && orig2MidRouteAndStops[i].midStop._id != stopsNearDest[j]._id){
+                        routeAndStops = {
+                            status: 2,
+                            routeId1st:orig2MidRouteAndStops[i].routeId,
+                            origStop: orig2MidRouteAndStops[i].origStop,
+                            routeId2nd: orig2MidRouteAndStops[i].midStop.properties.routes,
+                            midStop: orig2MidRouteAndStops[i].midStop,
+                            destStop: stopsNearDest[j]
+                        };
+                        return routeAndStops;
+                    }
+                }
+            }
+
+            routeAndStops = {
+                status: 0
+            };
+            return routeAndStops;
+        }).catch((err) => {
+            return err;
+        });
+}
+
+function findDistance(origDestCoords){
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(origDestCoords.latDest-origDestCoords.latOrig);  // deg2rad below
+    var dLon = deg2rad(origDestCoords.lngDest-origDestCoords.lngOrig);
+    var a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(origDestCoords.latOrig)) * Math.cos(deg2rad(origDestCoords.latDest)) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c; // Distance in km
+    return d * 1000;
+}
+
+function findMidpoint(lng1, lat1, lng2, lat2){
+    //-- Define radius function
+    if (typeof (Number.prototype.toRad) === 'undefined') {
+        Number.prototype.toRad = function () {
+            return this * Math.PI / 180;
+        };
+    }
+
+    //-- Define degrees function
+    if (typeof (Number.prototype.toDeg) === 'undefined') {
+        Number.prototype.toDeg = function () {
+            return this * (180 / Math.PI);
+        };
+    }
+    //-- Longitude difference
+    var dLng = (lng2 - lng1).toRad();
+
+    //-- Convert to radians
+    lat1 = lat1.toRad();
+    lat2 = lat2.toRad();
+    lng1 = lng1.toRad();
+
+    var bX = Math.cos(lat2) * Math.cos(dLng);
+    var bY = Math.cos(lat2) * Math.sin(dLng);
+    var lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + bX) * (Math.cos(lat1) + bX) + bY * bY));
+    var lng3 = lng1 + Math.atan2(bY, Math.cos(lat1) + bX);
+
+    //-- Return result
+    return {lng: lng3.toDeg(), lat: lat3.toDeg()};
+
+}
+
+function deg2rad(deg){
+    return deg * (Math.PI/180);
 }
 
 function addStopsToRoute(routeId, routeStops){
