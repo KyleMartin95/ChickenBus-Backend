@@ -27,34 +27,33 @@ var GoogleMapsController = {
     },
 
     getDirections: (stops) => {
-        return new Promise((resolve, reject) => {
-            var orig = [];
-            orig[0] = stops.orig[1];
-            orig[1] = stops.orig[0];
+        //return new Promise((resolve, reject) => {
+        var orig = [];
+        orig[0] = stops.orig[1];
+        orig[1] = stops.orig[0];
 
-            var dest = [];
-            dest[0] = stops.dest[1];
-            dest[1] = stops.dest[0];
+        var dest = [];
+        dest[0] = stops.dest[1];
+        dest[1] = stops.dest[0];
 
-            var query = {
-                origin: orig,
-                destination: dest
-            };
+        var query = {
+            origin: orig,
+            destination: dest
+        };
 
-            resolve(query);
+        return query;
 
-            // googleMapsClient.directions(query, (err, response) =>{
-            //     if (!err) {
-            //         resolve(response);
-            //     } else if (err === 'timeout') {
-            //         reject(err);
-            //     } else if (err.json) {
-            //         reject(err);
-            //     } else {
-            //         reject(err);
-            //     }
-            // });
-        });
+        // googleMapsClient.directions(query, (err, response) =>{
+        //     if (!err) {
+        //         resolve(response);
+        //     } else if (err === 'timeout') {
+        //         reject(err);
+        //     } else if (err.json) {
+        //         reject(err);
+        //     } else {
+        //         reject(err);
+        //     }
+        // });
     }
 
 };

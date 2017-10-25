@@ -18,6 +18,20 @@ module.exports = {
         });
     },
 
+    findById: (id) => {
+        return new Promise((resolve, reject) => {
+            Stop.find({
+                _id: id
+            }, function(err, stop){
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(stop);
+                }
+            });
+        });
+    },
+
     findNear: (location, unwind) => {
         return new Promise((resolve, reject) => {
             var lng = location.lng;
