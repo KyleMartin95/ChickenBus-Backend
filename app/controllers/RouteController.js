@@ -261,27 +261,6 @@ function findMidpoint(lng1, lat1, lng2, lat2){
 
 }
 
-function getMidstops(orig2MidRouteAndStops){
-    return new Promise((resolve, reject) => {
-        var sequence = Promise.resolve();
-        var completed = 0;
-        var midStops = [];
-        orig2MidRouteAndStops.forEach(function(routeAndStops){
-            sequence = sequence.then(() => {
-                return StopController.findById(routeAndStops.midStopId);
-            }).then((midStop) => {
-                completed++;
-                midStops.push(midStop);
-                if(completed == orig2MidRouteAndStops.length){
-                    resolve(midstops, orig2MidRouteAndStops);
-                }
-            }).catch((err) => {
-                reject(err);
-            });
-        });
-    });
-}
-
 function addStopsToRoute(routeId, routeStops){
     return new Promise((resolve, reject) => {
 
