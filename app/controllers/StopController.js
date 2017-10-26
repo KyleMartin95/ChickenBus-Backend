@@ -39,7 +39,7 @@ module.exports = {
     },
 
     /**
-     *
+     * return stops near the given coordinate
      */
     findNear: (location, unwind) => {
         return new Promise((resolve, reject) => {
