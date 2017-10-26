@@ -13,7 +13,6 @@ var GoogleMapsController = {
 
     getCoords: (address) => {
         return new Promise((resolve, reject) => {
-            console.log('ADDRESS', address);
             googleMapsClient.geocode({
                 address: address
             }, function(err, response) {

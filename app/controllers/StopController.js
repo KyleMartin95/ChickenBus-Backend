@@ -96,18 +96,10 @@ module.exports = {
         });
     },
 
-    findCord: (address) =>{
-        return new Promise((resolve, reject) =>{
-            GoogleMapsController.getCoords(address)
-                .then((coords) => {
-                    resolve(coords);
-                }).catch((err) => {
-                    reject(err);
-                });
-        });
-    },
-
-
+    /*
+    *   Creates a new stop. Coordinates field is an array [long, lat]. Route
+    *   field is an array of route id's that run through this top
+    */
     create: (routeId, stop) => {
         return new Promise((resolve, reject) => {
             Stop.create({
@@ -129,6 +121,10 @@ module.exports = {
         });
     },
 
+    /*
+    *   Adds routeIds to a stop with a specified id
+    */
+
     addRoute: (routeId, stopId) => {
         return new Promise((resolve, reject) => {
             Stop.update({_id: stopId},
@@ -144,6 +140,12 @@ module.exports = {
                 });
         });
     },
+
+    /*
+    *   Finds all stops within a certain radius of a circle with a specified
+    *   midpoint. Radius is in degrees. Unwinds the result on the routes to make
+    *   looping through the result easier
+    */
 
     findStopsInRadius: (radius, midpoint) => {
         return new Promise((resolve, reject) => {
