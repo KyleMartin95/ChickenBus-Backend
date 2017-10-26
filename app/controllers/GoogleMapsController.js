@@ -5,12 +5,15 @@ const Stop = mongoose.model('Stop');
 const StopController = require('./StopController');
 const RouteController = require('./RouteController');
 
-const googleMapsClient = require('@google/maps').createClient({
+const googleMapsClient = require('@google/maps').createClient({ //Google client and key needed to access map api
     key: 'AIzaSyAbiwYsHl4MCJ1-Dwkcc3uChWMmYjv5Qp4'
 });
 
 var GoogleMapsController = {
 
+    /**
+     * Call google map api with address string, return coordinate
+     */
     getCoords: (address) => {
         return new Promise((resolve, reject) => {
             console.log('ADDRESS', address);
@@ -26,8 +29,10 @@ var GoogleMapsController = {
         });
     },
 
+    /**
+     * swap coordinate format of longitude and latitude 
+     */
     getDirections: (stops) => {
-        //return new Promise((resolve, reject) => {
         var orig = [];
         orig[0] = stops.orig[1];
         orig[1] = stops.orig[0];
@@ -42,18 +47,6 @@ var GoogleMapsController = {
         };
 
         return query;
-
-        // googleMapsClient.directions(query, (err, response) =>{
-        //     if (!err) {
-        //         resolve(response);
-        //     } else if (err === 'timeout') {
-        //         reject(err);
-        //     } else if (err.json) {
-        //         reject(err);
-        //     } else {
-        //         reject(err);
-        //     }
-        // });
     }
 
 };

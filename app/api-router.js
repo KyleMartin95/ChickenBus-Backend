@@ -10,6 +10,11 @@ router
     });
 
 /*********************Routes**************************/
+
+/**
+ * find and return routes, error if not found
+ */
+
 router
     .route('/api/routes/find')
     .get((req, res) => {
@@ -22,6 +27,10 @@ router
             });
     });
 
+/**
+ * call to create a new route with name, stops, and cost as request
+ */
+
 router
     .route('/api/routes/create')
     .post((req, res) => {
@@ -33,6 +42,10 @@ router
                 res.sendStatus(500);
             });
     });
+
+/**
+ * Call with coordiantes of origin and destination to find the direction of a route near them
+ */
 
 router
     .route('/api/routes/find-near')
@@ -48,6 +61,10 @@ router
     });
 
 /**********************Stops**************************/
+
+/**
+ * call to find stops near a coordinate
+ */
 router
     .route('/api/stops/find-near')
     .get((req, res) => {
@@ -60,6 +77,9 @@ router
             });
     });
 
+/**
+ * create stop
+ */
 router
     .route('/api/stops/create')
     .get((req, res) => {
@@ -72,15 +92,16 @@ router
             });
     });
 
+/**
+ * get the coordinate from an address using google
+ */
 router
     .route('/api/stops/coordinate')
     .get((req, res) => {
-        stopController.findCord(req.query.address, res)
+        googleMapsController.findCords(req.query.address, res)
             .then((location) => {
-                // res.send(location);
                 res.json(location);
             }).catch((err) => {
-                // res.send('failed');
                 console.log(err);
                 res.sendStatus(500);
             });

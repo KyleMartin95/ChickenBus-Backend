@@ -5,9 +5,12 @@ const GoogleMapsController = require('./GoogleMapsController');
 
 module.exports = {
 
+    /**
+     * find stop in db
+     */
     find: (req, res) => {
         return new Promise((resolve, reject) => {
-            Stop.find({}, function(err, stops){
+            Stop.find({}, function(err, stops){     
                 if(err){
                     console.log(err);
                     res.send(err);
@@ -18,6 +21,9 @@ module.exports = {
         });
     },
 
+    /**
+     * Find stop in db based on id
+     */
     findById: (id) => {
         return new Promise((resolve, reject) => {
             Stop.find({
@@ -32,16 +38,19 @@ module.exports = {
         });
     },
 
+    /**
+     * 
+     */
     findNear: (location, unwind) => {
         return new Promise((resolve, reject) => {
             var lng = location.lng;
             var lat = location.lat;
 
-            if(unwind){
+            if(unwind){ 
                 Stop.aggregate(
                     [
                         {
-                            '$geoNear': {
+                            '$geoNear': { //mongodb geospatial command, return objects in order closest to set coordinate
                                 'near': {
                                     'type': 'Point',
                                     'coordinates': [lng, lat]
@@ -52,10 +61,10 @@ module.exports = {
                             }
                         },
                         {
-                            '$sort':{'distance': 1}
+                            '$sort':{'distance': 1} //closest fist
                         },
                         {
-                            '$unwind': '$properties.routes'
+                            '$unwind': '$properties.routes' //mongodb function to separate list in object's attribute as individual elements in an array 
                         }
                     ], function(err, results){
                         if(err){
@@ -68,7 +77,7 @@ module.exports = {
                     }
                 );
             }else{
-                Stop.aggregate(
+                Stop.aggregate( //do same without unwinding 
                     [
                         {
                             '$geoNear': {
@@ -95,18 +104,6 @@ module.exports = {
             }
         });
     },
-
-    findCord: (address) =>{
-        return new Promise((resolve, reject) =>{
-            GoogleMapsController.getCoords(address)
-                .then((coords) => {
-                    resolve(coords);
-                }).catch((err) => {
-                    reject(err);
-                });
-        });
-    },
-
 
     create: (routeId, stop) => {
         return new Promise((resolve, reject) => {
@@ -174,13 +171,3 @@ module.exports = {
     }
 };
 
-//TODO:
-//Stops need additional param for order of this stop in route
-//ex. managua, 2
-//move all API call to backend, specifically
-//  frontend search with lat lng for dest, ori
-//  comes back do Findnear with route
-//      route does findnear of stop and return: route, stops' ID
-//      use ID to get coordinate and send to direction
-//          direction comes back with direction info
-//          send direction info to frontend.
