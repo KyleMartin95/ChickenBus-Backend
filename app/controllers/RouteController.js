@@ -7,6 +7,9 @@ const GoogleMapsController = require('./GoogleMapsController');
 
 var RouteController = {
 
+    /*
+    *   Returns all routes
+    */
     find: (req, res) => {
         return new Promise((resolve, reject) => {
             Route.find({}, function(err, routes){
@@ -33,6 +36,12 @@ var RouteController = {
         });
     },
 
+    /*
+    *   Gets origin and destination from query string
+    *   Finds stops within a certain radius of origin and destination
+    *   Calls findRoute() with that information
+    *   Uses what findRoute() returns to call Google maps controller
+    */
     findNear: (req, res) => {
         return new Promise((resolve, reject) => {
             var origDestCoords = {
@@ -133,12 +142,16 @@ if (typeof (Number.prototype.toDeg) === 'undefined') {
     };
 }
 
+/*
+*   Double for loop compares the routes of each origin and destination stop
+*   If there is a match then we know that there is a route between them
+*   If there is no match then it goes on to try to find connections
+*/
 function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
-        var i,j;
         var routeAndStops;
-        for(i = 0; i < stopsNearOrig.length; i++){
-            for(j = 0; j < stopsNearDest.length; j++){
+        for(var i = 0; i < stopsNearOrig.length; i++){
+            for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
                     routeAndStops = {
                         status: 1,
@@ -150,8 +163,8 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
                 }
             }
         }
-        console.log('NO DIRECT ROUTE FOUND');
-        //no direct route found
+
+        // no direct route so we look for connecting routes
         findConnection(stopsNearOrig, stopsNearDest, origDestCoords)
             .then((routeAndStops) => {
                 resolve(routeAndStops);
@@ -160,6 +173,13 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
             });
     });
 }
+
+/*
+*   This function works by "drawing" a circle with a diameter of the length between
+*   the origin and destination and the middle at the midpoint between those two
+*   locations. It then finds all stops within this circle and looks for routes
+*   that go between the origin and this stop and the destination and this stop
+*/
 
 function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
@@ -172,6 +192,7 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
 
                 var orig2MidRouteAndStops = [];
                 var routeAndStops;
+                //finds routes between origin and stops in the middle
                 for(let i = 0; i < stopsNearOrig.length; i++){
                     for(let j = 0; j < stopsInRadius.length; j++){
                         if(stopsNearOrig[i].properties.routes.equals(stopsInRadius[j].properties.routes) && stopsNearOrig[i]._id != stopsInRadius[j]._id){
@@ -185,6 +206,7 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
                 }
 
                 var mid2DestRouteAndStops = [];
+                // finds routes between middle stops and destination
                 for(let i = 0; i < stopsInRadius.length; i++){
                     for(let j = 0; j < stopsNearDest.length; j++){
                         if(stopsInRadius[i].properties.routes.equals(stopsNearDest[j].properties.routes) && (stopsInRadius[i]._id !== stopsNearDest[j]._id)){
@@ -198,6 +220,11 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
                 }
 
                 var finalRoutes = [];
+                /*
+                *   compares the results of the last two for loops looking for a
+                *   common middle stop. If it finds one it returns all info
+                *   about these stops and routes
+                */
                 for(var i = 0; i < orig2MidRouteAndStops.length; i++){
                     for(var j = 0; j < mid2DestRouteAndStops.length; j++){
                         if(orig2MidRouteAndStops[i].midStop._id.equals(mid2DestRouteAndStops[j].midStop._id)){
@@ -211,6 +238,8 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
                         }
                     }
                 }
+
+                //prepares object to send back to caller
                 if(finalRoutes.length === 0){
                     routeAndStops = {
                         status: 0
@@ -228,6 +257,40 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
             });
     });
 
+}
+
+/*
+*   used for data entry. when a route is made the corresponding stops have to be
+*   added. it loops through each stop and sees if there are any stops already at
+*   that location. if it finds one it adds the route to the stop. if not, it
+*   adds the new stop to the database and then adds the new route to the stop
+*/
+
+function addStopsToRoute(routeId, routeStops){
+    return new Promise((resolve, reject) => {
+
+        routeStops.forEach((stop) => {
+            var lng = Number(stop.coordinates[0], 10);
+            var lat = Number(stop.coordinates[1], 10);
+
+            sequence = sequence.then(() => {
+                return StopController.findNear({lng: lng, lat: lat}, false);         // check to  see if the stop is already a stop
+            }).then((stopsInProximity) => {
+                if(stopsInProximity.length === 0){
+                    return StopController.create(routeId, stop);                    // if it is not already a stop, create it
+                }else{
+                    return StopController.addRoute(routeId, stopsInProximity[0]._id);  // if it is, update the routes array in the closest stop to contain the id of the route that is being created
+                }
+            }).then((stop) => {
+                completed++;
+                if(completed === routeStops.length){
+                    resolve();
+                }
+            }).catch((err) => {
+                reject(err);
+            });
+        });
+    });
 }
 
 function findDistance(origDestCoords){
@@ -259,52 +322,4 @@ function findMidpoint(lng1, lat1, lng2, lat2){
     //-- Return result
     return {lng: lng3.toDeg(), lat: lat3.toDeg()};
 
-}
-
-function getMidstops(orig2MidRouteAndStops){
-    return new Promise((resolve, reject) => {
-        var sequence = Promise.resolve();
-        var completed = 0;
-        var midStops = [];
-        orig2MidRouteAndStops.forEach(function(routeAndStops){
-            sequence = sequence.then(() => {
-                return StopController.findById(routeAndStops.midStopId);
-            }).then((midStop) => {
-                completed++;
-                midStops.push(midStop);
-                if(completed == orig2MidRouteAndStops.length){
-                    resolve(midstops, orig2MidRouteAndStops);
-                }
-            }).catch((err) => {
-                reject(err);
-            });
-        });
-    });
-}
-
-function addStopsToRoute(routeId, routeStops){
-    return new Promise((resolve, reject) => {
-
-        routeStops.forEach((stop) => {
-            var lng = Number(stop.coordinates[0], 10);
-            var lat = Number(stop.coordinates[1], 10);
-
-            sequence = sequence.then(() => {
-                return StopController.findNear({lng: lng, lat: lat}, false); // check to  see if the stop is already a stop
-            }).then((stopsInProximity) => {
-                if(stopsInProximity.length === 0){
-                    return StopController.create(routeId, stop);                    // if it is not already a stop, create it
-                }else{
-                    return StopController.addRoute(routeId, stopsInProximity[0]._id);  // if it is, update the routes array in the closest stop to contain the id of the route that is being created
-                }
-            }).then((stop) => {
-                completed++;
-                if(completed === routeStops.length){
-                    resolve();
-                }
-            }).catch((err) => {
-                reject(err);
-            });
-        });
-    });
 }

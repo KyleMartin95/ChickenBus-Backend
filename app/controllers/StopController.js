@@ -10,7 +10,7 @@ module.exports = {
      */
     find: (req, res) => {
         return new Promise((resolve, reject) => {
-            Stop.find({}, function(err, stops){     
+            Stop.find({}, function(err, stops){
                 if(err){
                     console.log(err);
                     res.send(err);
@@ -39,14 +39,14 @@ module.exports = {
     },
 
     /**
-     * 
+     *
      */
     findNear: (location, unwind) => {
         return new Promise((resolve, reject) => {
             var lng = location.lng;
             var lat = location.lat;
 
-            if(unwind){ 
+            if(unwind){
                 Stop.aggregate(
                     [
                         {
@@ -64,7 +64,7 @@ module.exports = {
                             '$sort':{'distance': 1} //closest fist
                         },
                         {
-                            '$unwind': '$properties.routes' //mongodb function to separate list in object's attribute as individual elements in an array 
+                            '$unwind': '$properties.routes' //mongodb function to separate list in object's attribute as individual elements in an array
                         }
                     ], function(err, results){
                         if(err){
@@ -77,7 +77,7 @@ module.exports = {
                     }
                 );
             }else{
-                Stop.aggregate( //do same without unwinding 
+                Stop.aggregate( //do same without unwinding
                     [
                         {
                             '$geoNear': {
@@ -105,6 +105,10 @@ module.exports = {
         });
     },
 
+    /*
+    *   Creates a new stop. Coordinates field is an array [long, lat]. Route
+    *   field is an array of route id's that run through this top
+    */
     create: (routeId, stop) => {
         return new Promise((resolve, reject) => {
             Stop.create({
@@ -126,6 +130,10 @@ module.exports = {
         });
     },
 
+    /*
+    *   Adds routeIds to a stop with a specified id
+    */
+
     addRoute: (routeId, stopId) => {
         return new Promise((resolve, reject) => {
             Stop.update({_id: stopId},
@@ -141,6 +149,12 @@ module.exports = {
                 });
         });
     },
+
+    /*
+    *   Finds all stops within a certain radius of a circle with a specified
+    *   midpoint. Radius is in degrees. Unwinds the result on the routes to make
+    *   looping through the result easier
+    */
 
     findStopsInRadius: (radius, midpoint) => {
         return new Promise((resolve, reject) => {
@@ -170,4 +184,3 @@ module.exports = {
         });
     }
 };
-

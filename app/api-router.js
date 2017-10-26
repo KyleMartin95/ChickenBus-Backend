@@ -1,6 +1,8 @@
 const express = require('express');
 const routeController = require('./controllers/RouteController');
 const stopController = require('./controllers/StopController');
+const GoogleMapsController = require('./controllers/GoogleMapsController');
+
 var router = express.Router();
 
 router
@@ -98,9 +100,9 @@ router
 router
     .route('/api/stops/coordinate')
     .get((req, res) => {
-        googleMapsController.findCords(req.query.address, res)
+        GoogleMapsController.getCoords(req.query.address)
             .then((location) => {
-                res.json(location);
+                res.status(200).json(location);
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
