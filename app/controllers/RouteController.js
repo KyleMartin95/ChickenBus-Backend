@@ -193,8 +193,8 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
                 var orig2MidRouteAndStops = [];
                 var routeAndStops;
                 //finds routes between origin and stops in the middle
-                for(let i = 0; i < stopsNearOrig.length; i++){
-                    for(let j = 0; j < stopsInRadius.length; j++){
+                for(var i = 0; i < stopsNearOrig.length; i++){
+                    for(var j = 0; j < stopsInRadius.length; j++){
                         if(stopsNearOrig[i].properties.routes.equals(stopsInRadius[j].properties.routes) && stopsNearOrig[i]._id != stopsInRadius[j]._id){
                             orig2MidRouteAndStops.push({
                                 routeId: stopsNearOrig[i].properties.routes,
@@ -207,8 +207,8 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
 
                 var mid2DestRouteAndStops = [];
                 // finds routes between middle stops and destination
-                for(let i = 0; i < stopsInRadius.length; i++){
-                    for(let j = 0; j < stopsNearDest.length; j++){
+                for(var i = 0; i < stopsInRadius.length; i++){
+                    for(var j = 0; j < stopsNearDest.length; j++){
                         if(stopsInRadius[i].properties.routes.equals(stopsNearDest[j].properties.routes) && (stopsInRadius[i]._id !== stopsNearDest[j]._id)){
                             mid2DestRouteAndStops.push({
                                 routeId: stopsInRadius[i].properties.routes,
@@ -268,7 +268,9 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
 
 function addStopsToRoute(routeId, routeStops){
     return new Promise((resolve, reject) => {
-
+        var sequence = Promise.resolve();
+        var completed = 0;
+        
         routeStops.forEach((stop) => {
             var lng = Number(stop.coordinates[0], 10);
             var lat = Number(stop.coordinates[1], 10);
