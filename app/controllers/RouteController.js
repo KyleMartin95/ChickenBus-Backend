@@ -96,6 +96,7 @@ var RouteController = {
             var routeName = req.body.name;
             var routeCost = req.body.cost;
             var routeStops = req.body.stops;
+            console.log(req.body);
 
             Route.create({
                 type: 'Feature',
@@ -270,7 +271,7 @@ function addStopsToRoute(routeId, routeStops){
     return new Promise((resolve, reject) => {
         var sequence = Promise.resolve();
         var completed = 0;
-        
+
         routeStops.forEach((stop) => {
             var lng = Number(stop.coordinates[0], 10);
             var lat = Number(stop.coordinates[1], 10);
