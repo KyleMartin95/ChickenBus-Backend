@@ -12,7 +12,9 @@ var routeSchema = new Schema({
     },
     properties: {
         name: String,
-        cost: Number
+        cost: Number,
+        duration: Number,
+        notes: String,
     }
 });
 
