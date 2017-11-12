@@ -43,7 +43,6 @@ var RouteController = {
     *   Uses what findRoute() returns to call Google maps controller
     */
     findNear: (req, res) => {
-        console.log("in here")
         return new Promise((resolve, reject) => {
             var origDestCoords = {
                 lngOrig: Number(req.query.lngOrig, 10),
@@ -54,49 +53,43 @@ var RouteController = {
 
             var stopsNearOrig = [];
             var stopsNearDest = [];
-            console.log("now in here")
+            var routesAndStopsFinal;
+            var routesAndInfo = [];
             
             StopController.findNear({lng: origDestCoords.lngOrig, lat: origDestCoords.latOrig}, true)
                 .then((stops) => {
-                    console.log("finally in here")                    
                     stopsNearOrig = stops;
                     return StopController.findNear({lng: origDestCoords.lngDest, lat: origDestCoords.latDest}, true);
 
                 }).then((stops) => {
 
                     stopsNearDest = stops;
-                    return findRoute(stopsNearOrig, stopsNearDest, origDestCoords).then((routeAndStops)=>{
-                        console.log("start1 ---------------------------");
-                        console.log(routeAndStops);
-                        console.log("end1-----------------------------------");
-                        return RouteController.findById(routeAndStops.routeId).then((routeInfo)=>{
-                            return [routeAndStops, routeInfo];
-                        });
-                    });
+                    return findRoute(stopsNearOrig, stopsNearDest, origDestCoords)
 
                 }).then((routeAndStops) => {
-                    console.log("start2 ---------------------------");
-                    console.log(routeAndStops[1]);
-                    console.log("end2-----------------------------------");
-                    if(routeAndStops[0].status === 0){
+                    routeAndStopsFinal = routeAndStops;
+                    if(routeAndStops.status === 0){
                         reject('No route found');
-                    }else if(routeAndStops[0].status === 1){
-                        resolve([[GoogleMapsController.getDirections({
-                            orig: routeAndStops[0].origStop.geometry.coordinates,
-                            dest: routeAndStops[0].destStop.geometry.coordinates,
-                        })], routeAndStops[1]]);
+                    }else if(routeAndStops.status === 1){
+                        return RouteController.findById(routeAndStops.routeId);
+                        [GoogleMapsController.getDirections({
+                            orig: routeAndStops.origStop.geometry.coordinates,
+                            dest: routeAndStops.destStop.geometry.coordinates,
+                        })]
                     }else{
                         var firstRoute = GoogleMapsController.getDirections({
                             orig: routeAndStops[0].routes[0].origStop.geometry.coordinates,
                             dest: routeAndStops[0].routes[0].midStop.geometry.coordinates
                         });
                         var secondRoute = GoogleMapsController.getDirections({
-                            orig: routeAndStops[0].routes[0].midStop.geometry.coordinates,
-                            dest: routeAndStops[0].routes[0].destStop.geometry.coordinates
+                            orig: routeAndStops[0].routes[1].midStop.geometry.coordinates,
+                            dest: routeAndStops[0].routes[1].destStop.geometry.coordinates
                         });
                         resolve([[firstRoute, secondRoute]]);
                     }
 
+                }).then((routeInfo) => {
+                    if(route)
                 }).catch((err) => {
                     reject(err);
                 });
