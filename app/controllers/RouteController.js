@@ -51,52 +51,19 @@ var RouteController = {
                 latDest: Number(req.query.latDest, 10)
             };
 
-            var stopsNearOrig = [];
-            var stopsNearDest = [];
+            var stopsNearOrig, stopsNearDest = [];
 
             StopController.findNear({lng: origDestCoords.lngOrig, lat: origDestCoords.latOrig}, true)
                 .then((stops) => {
-
                     stopsNearOrig = stops;
                     return StopController.findNear({lng: origDestCoords.lngDest, lat: origDestCoords.latDest}, true);
-
                 }).then((stops) => {
-
                     stopsNearDest = stops;
                     return findRoute(stopsNearOrig, stopsNearDest, origDestCoords);
-
                 }).then((routeAndStops) => {
-                    //TODO: return all stop info
-                    if(routeAndStops.status === 0){
-                        reject('No route found');
-                    }else if(routeAndStops.status === 1){
-
-                        Route.findById(routeAndStops.routeId)
-                            .then((route) => {
-                                resolve([GoogleMapsController.getDirections({
-                                    orig: routeAndStops.origStop.geometry.coordinates,
-                                    dest: routeAndStops.destStop.geometry.coordinates
-                                })]);
-                            });
-                    }else{
-                        var route1Info, route2Info;
-                        Route.findById(routeAndStops.routes[0].route1Id)
-                            .then((route) => {
-                                route1Info = route;
-                                return Route.findById(routeAndStops.routes[0].route2Id);
-                            }).then((route) => {
-                                route2Info = route;
-                                var firstRouteCoords = GoogleMapsController.getDirections({
-                                    orig: routeAndStops.routes[0].origStop.geometry.coordinates,
-                                    dest: routeAndStops.routes[0].midStop.geometry.coordinates
-                                });
-                                var secondRouteCoords = GoogleMapsController.getDirections({
-                                    orig: routeAndStops.routes[0].midStop.geometry.coordinates,
-                                    dest: routeAndStops.routes[0].destStop.geometry.coordinates
-                                });
-                                resolve([firstRouteCoords, secondRouteCoords]);
-                            });
-                    }
+                    return compileTripInfo(routeAndStops);
+                }).then(tripInfo => {
+                    resolve(tripInfo);
                 }).catch((err) => {
                     reject(err);
                 });
@@ -108,6 +75,9 @@ var RouteController = {
             var routeName = req.body.name;
             var routeCost = req.body.cost;
             var routeStops = req.body.stops;
+            var routeTimes = req.body.times;
+            var routeDuration = req.body.duration;
+            var routeNotes = req.body.notes;
             console.log(req.body);
 
             Route.create({
@@ -133,6 +103,61 @@ var RouteController = {
                         });
                 }
             });
+        });
+    },
+
+    compileTripInfo: (routeAndStops) => {
+        return new Promise((resolve, reject) => {
+            if(routeAndStops.status === 0){
+                reject('No route found');
+            }else if(routeAndStops.status === 1){
+                Route.findById(routeAndStops.routeId)
+                    .then((route) => {
+                        return Route.getStops(route._id);
+                    }).then((stops) => {
+                        var directions = GoogleMapsController.getDirections({
+                            orig: routeAndStops.origStop.geometry.coordinates,
+                            dest: routeAndStops.destStop.geometry.coordinates
+                        });
+                        var tripInfo = {
+                            connections: 0,
+                            routesInfo: [route],
+                            directions: [directions],
+                        };
+                        resolve(tripInfo);
+                    });
+            }else{
+                var route1Info, route2Info, route1Stops, route2Stops;
+                Route.findById(routeAndStops.routes[0].route1Id)
+                    .then((route) => {
+                        route1Info = route;
+                        return Route.findById(routeAndStops.routes[0].route2Id);
+                    }).then((route) => {
+                        return Route.getStops(route1Info._id);
+                        route2Info = route;
+                    }).then((stops) => {
+                        route1Stops = stops;
+                        return Route.getStops(route2Info._id);
+                    }).then((stops) => {
+                        route2Stops = stops;
+                        var firstRouteDirections = GoogleMapsController.getDirections({
+                            orig: routeAndStops.routes[0].origStop.geometry.coordinates,
+                            dest: routeAndStops.routes[0].midStop.geometry.coordinates
+                        });
+                        var secondRouteDirections = GoogleMapsController.getDirections({
+                            orig: routeAndStops.routes[0].midStop.geometry.coordinates,
+                            dest: routeAndStops.routes[0].destStop.geometry.coordinates
+                        });
+                        var tripInfo = {
+                            connections: 1,
+                            routesInfo: [route1Info, route2Info],
+                            directions: [firstRouteDirections, secondRouteDirections]
+                        };
+                        resolve(tripInfo);
+                    }).catch(err => {
+                        reject(err);
+                    });
+            }
         });
     },
 
