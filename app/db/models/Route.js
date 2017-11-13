@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+require('mongoose-currency').loadType(mongoose);
+var Currency = mongoose.Types.Currency;
+
 var routeSchema = new Schema({
     type: String,
     geometry : {
@@ -12,7 +15,19 @@ var routeSchema = new Schema({
     },
     properties: {
         name: String,
-        cost: Number
+        price: {type: Currency},
+        //stored as UTC
+        departureTimes: {
+            sunday: [Number],
+            monday: [Number],
+            tuesday: [Number],
+            wednesday: [Number],
+            thursday: [Number],
+            friday: [Number],
+            saturday: [Number]
+        },
+        duration: Number,
+        notes: String
     }
 });
 

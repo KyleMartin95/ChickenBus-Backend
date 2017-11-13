@@ -25,6 +25,7 @@
     "express": "^4.15.4",
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.13",
+    "mongoose-currency": "^0.2.0",
     "mysql2": "^1.4.2",
     "sequelize": "^4.8.3",
     "sequelize-cli": "^3.0.0-2"

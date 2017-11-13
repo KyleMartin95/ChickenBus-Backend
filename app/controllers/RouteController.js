@@ -66,25 +66,37 @@ var RouteController = {
                     return findRoute(stopsNearOrig, stopsNearDest, origDestCoords);
 
                 }).then((routeAndStops) => {
+                    //TODO: return all stop info
                     if(routeAndStops.status === 0){
                         reject('No route found');
                     }else if(routeAndStops.status === 1){
-                        resolve([GoogleMapsController.getDirections({
-                            orig: routeAndStops.origStop.geometry.coordinates,
-                            dest: routeAndStops.destStop.geometry.coordinates
-                        })]);
-                    }else{
-                        var firstRoute = GoogleMapsController.getDirections({
-                            orig: routeAndStops.routes[0].origStop.geometry.coordinates,
-                            dest: routeAndStops.routes[0].midStop.geometry.coordinates
-                        });
-                        var secondRoute = GoogleMapsController.getDirections({
-                            orig: routeAndStops.routes[0].midStop.geometry.coordinates,
-                            dest: routeAndStops.routes[0].destStop.geometry.coordinates
-                        });
-                        resolve([firstRoute, secondRoute]);
-                    }
 
+                        Route.findById(routeAndStops.routeId)
+                            .then((route) => {
+                                resolve([GoogleMapsController.getDirections({
+                                    orig: routeAndStops.origStop.geometry.coordinates,
+                                    dest: routeAndStops.destStop.geometry.coordinates
+                                })]);
+                            });
+                    }else{
+                        var route1Info, route2Info;
+                        Route.findById(routeAndStops.routes[0].route1Id)
+                            .then((route) => {
+                                route1Info = route;
+                                return Route.findById(routeAndStops.routes[0].route2Id);
+                            }).then((route) => {
+                                route2Info = route;
+                                var firstRouteCoords = GoogleMapsController.getDirections({
+                                    orig: routeAndStops.routes[0].origStop.geometry.coordinates,
+                                    dest: routeAndStops.routes[0].midStop.geometry.coordinates
+                                });
+                                var secondRouteCoords = GoogleMapsController.getDirections({
+                                    orig: routeAndStops.routes[0].midStop.geometry.coordinates,
+                                    dest: routeAndStops.routes[0].destStop.geometry.coordinates
+                                });
+                                resolve([firstRouteCoords, secondRouteCoords]);
+                            });
+                    }
                 }).catch((err) => {
                     reject(err);
                 });
@@ -121,6 +133,19 @@ var RouteController = {
                         });
                 }
             });
+        });
+    },
+
+    getStops: (routeId) => {
+        return new Promise((resolve, reject) => {
+            Stops.find({'properties.routes': routeId},
+                (err, stops) => {
+                    if(err){
+                        reject(err);
+                    }else{
+                        resolve(stops);
+                    }
+                });
         });
     }
 };
