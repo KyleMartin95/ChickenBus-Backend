@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const parse = require('csv-parse');
 const Route = mongoose.model('Route');
 const Stop = mongoose.model('Stop');
 
@@ -173,6 +174,18 @@ var RouteController = {
                 });
         });
     }
+
+    // getCSV: () => {
+    //     return new Promise((resolve, reject) => {
+    //         readCSV({csv}, function(err, output){
+    //             if(err){
+    //                 reject(err);
+    //             }else{
+    //                 resolve(output);
+    //             }
+    //         });
+    //     });
+    // }
 };
 
 module.exports = RouteController;
@@ -376,3 +389,9 @@ function findMidpoint(lng1, lat1, lng2, lat2){
     return {lng: lng3.toDeg(), lat: lat3.toDeg()};
 
 }
+
+// function readCSV(csv){
+//     columns = [];
+//     parse(csv, {columns: true}, function(err, output){});
+//     return output;
+// }
