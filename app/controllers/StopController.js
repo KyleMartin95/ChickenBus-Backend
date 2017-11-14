@@ -13,9 +13,9 @@ module.exports = {
             Stop.find({}, function(err, stops){
                 if(err){
                     console.log(err);
-                    res.send(err);
+                    reject(err);
                 }else{
-                    res.json(stops);
+                    resolve(stops);
                 }
             });
         });

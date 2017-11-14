@@ -61,7 +61,7 @@ var RouteController = {
                     stopsNearDest = stops;
                     return findRoute(stopsNearOrig, stopsNearDest, origDestCoords);
                 }).then((routeAndStops) => {
-                    return compileTripInfo(routeAndStops);
+                    return RouteController.compileTripInfo(routeAndStops);
                 }).then(tripInfo => {
                     resolve(tripInfo);
                 }).catch((err) => {
@@ -108,51 +108,74 @@ var RouteController = {
 
     compileTripInfo: (routeAndStops) => {
         return new Promise((resolve, reject) => {
+            var routeInfo;
+
             if(routeAndStops.status === 0){
                 reject('No route found');
             }else if(routeAndStops.status === 1){
-                Route.findById(routeAndStops.routeId)
+                RouteController.findById(routeAndStops.routeId)
                     .then((route) => {
-                        return Route.getStops(route._id);
+                        routeInfo = route;
+                        return RouteController.getStops(route[0]._id);
                     }).then((stops) => {
-                        var directions = GoogleMapsController.getDirections({
+                        stops = flipLatLng(stops);
+                        var origDest = GoogleMapsController.getDirections({
                             orig: routeAndStops.origStop.geometry.coordinates,
                             dest: routeAndStops.destStop.geometry.coordinates
                         });
                         var tripInfo = {
                             connections: 0,
-                            routesInfo: [route],
-                            directions: [directions],
+                            routesInfo: [routeInfo],
+                            directions: [
+                                {
+                                    orig: origDest.origin,
+                                    dest: origDest.destination,
+                                    stops: stops
+                                }
+                            ]
                         };
+                        console.log(tripInfo);
                         resolve(tripInfo);
                     });
             }else{
                 var route1Info, route2Info, route1Stops, route2Stops;
-                Route.findById(routeAndStops.routes[0].route1Id)
+                RouteController.findById(routeAndStops.routes[0].route1Id)
                     .then((route) => {
-                        route1Info = route;
-                        return Route.findById(routeAndStops.routes[0].route2Id);
+                        route1Info = route[0];
+                        return RouteController.findById(routeAndStops.routes[0].route2Id);
                     }).then((route) => {
-                        return Route.getStops(route1Info._id);
-                        route2Info = route;
+                        route2Info = route[0];
+                        return RouteController.getStops(route1Info._id);
                     }).then((stops) => {
-                        route1Stops = stops;
-                        return Route.getStops(route2Info._id);
+                        route1Stops = flipLatLng(stops);
+                        return RouteController.getStops(route2Info._id);
                     }).then((stops) => {
-                        route2Stops = stops;
-                        var firstRouteDirections = GoogleMapsController.getDirections({
+                        route2Stops = flipLatLng(stops);
+                        var firstRouteOrigDest = GoogleMapsController.getDirections({
                             orig: routeAndStops.routes[0].origStop.geometry.coordinates,
                             dest: routeAndStops.routes[0].midStop.geometry.coordinates
                         });
-                        var secondRouteDirections = GoogleMapsController.getDirections({
+                        var secondRouteOrigDest = GoogleMapsController.getDirections({
                             orig: routeAndStops.routes[0].midStop.geometry.coordinates,
                             dest: routeAndStops.routes[0].destStop.geometry.coordinates
                         });
                         var tripInfo = {
                             connections: 1,
                             routesInfo: [route1Info, route2Info],
-                            directions: [firstRouteDirections, secondRouteDirections]
+                            directions: [
+                                {
+                                    orig: firstRouteOrigDest.origin,
+                                    dest: firstRouteOrigDest.destination,
+                                    stops: route1Stops
+                                },
+                                {
+                                    orig: secondRouteOrigDest.origin,
+                                    dest: secondRouteOrigDest.destination,
+                                    stops: route2Stops
+                                }
+                            ]
                         };
+                        console.log(tripInfo);
                         resolve(tripInfo);
                     }).catch(err => {
                         reject(err);
@@ -163,7 +186,8 @@ var RouteController = {
 
     getStops: (routeId) => {
         return new Promise((resolve, reject) => {
-            Stops.find({'properties.routes': routeId},
+            console.log('in get stops');
+            Stop.find({'properties.routes': routeId},
                 (err, stops) => {
                     if(err){
                         reject(err);
@@ -344,6 +368,13 @@ function addStopsToRoute(routeId, routeStops){
             });
         });
     });
+}
+
+function flipLatLng(stops){
+    for(var i = 0; i < stops.length; i++){
+        stops[i].geometry.coordinates = stops[i].geometry.coordinates.reverse();
+    }
+    return stops;
 }
 
 function findDistance(origDestCoords){
