@@ -89,7 +89,9 @@ var RouteController = {
                 },
                 properties: {
                     name: routeName,
-                    cost: routeCost
+                    cost: routeCost,
+                    duration: routeDuration,
+                    notes: routeNotes
                 }
             }, function(err,route){
                 if(err){
@@ -116,7 +118,7 @@ var RouteController = {
             }else if(routeAndStops.status === 1){
                 RouteController.findById(routeAndStops.routeId)
                     .then((route) => {
-                        routeInfo = route;
+                        routeInfo = route[0];
                         return RouteController.getStops(route[0]._id);
                     }).then((stops) => {
                         stops = flipLatLng(stops);
@@ -135,7 +137,6 @@ var RouteController = {
                                 }
                             ]
                         };
-                        console.log(tripInfo);
                         resolve(tripInfo);
                     });
             }else{
@@ -176,7 +177,6 @@ var RouteController = {
                                 }
                             ]
                         };
-                        console.log(tripInfo);
                         resolve(tripInfo);
                     }).catch(err => {
                         reject(err);
@@ -187,7 +187,6 @@ var RouteController = {
 
     getStops: (routeId) => {
         return new Promise((resolve, reject) => {
-            console.log('in get stops');
             Stop.find({'properties.routes': routeId},
                 (err, stops) => {
                     if(err){
