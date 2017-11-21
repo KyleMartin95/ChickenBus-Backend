@@ -81,7 +81,6 @@ var RouteController = {
           
             console.log(req.body);
             console.log(req.body.stops);
-            
 
             Route.create({
                 type: 'Feature',
@@ -467,14 +466,4 @@ function formatJSON(route){
     });
 }
 
-// function coord(stop){
-//     var address = GoogleMapsController.getCoords(stops[i])
-//         .then((address) => {
-//             // console.log(address);                                        
-//             console.log(address);
-//             return address;                                         
-//         }).catch((err) => {
-//             console.log(err);                    
-//         });
-// }
 
