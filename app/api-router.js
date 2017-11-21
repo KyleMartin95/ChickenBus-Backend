@@ -64,7 +64,7 @@ router
                 res.status(200).json(directions);
             }).catch((err) => {
                 console.log(err);
-                res.status(200).send(err);
+                res.status(400).send(err);
             });
     });
 
@@ -160,7 +160,7 @@ router
                             success: false,
                             message: 'Could not process the form.'
                         });
-                    }                    
+                    }
                 }else{
                     res.status(200).json({
                         success: true,
@@ -210,7 +210,7 @@ router
                         });
                     }
                 }else{
-                    return res.json({
+                    res.status(200).json({
                         success: true,
                         message: 'You have successfully logged in!',
                         token,
