@@ -21,13 +21,18 @@
   "homepage": "https://github.com/KyleMartin95/ChickenBus-Backend#readme",
   "dependencies": {
     "@google/maps": "^0.4.5",
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.0",
+    "cookie-parser": "^1.4.3",
     "express": "^4.15.4",
     "express-validator": "^4.3.0",
+    "jsonwebtoken": "^8.1.0",
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.13",
     "mongoose-currency": "^0.2.0",
     "mysql2": "^1.4.2",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "sequelize": "^4.8.3",
     "sequelize-cli": "^3.0.0-2"
   },

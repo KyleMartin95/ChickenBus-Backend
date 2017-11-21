@@ -27,7 +27,12 @@ var routeSchema = new Schema({
             saturday: [Number]
         },
         duration: Number,
-        notes: String
+        notes: String,
+        approved: {
+            type: Boolean,
+            required: true,
+            default: false
+        }
     }
 });
 

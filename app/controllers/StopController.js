@@ -12,7 +12,6 @@ module.exports = {
         return new Promise((resolve, reject) => {
             Stop.find({}, function(err, stops){
                 if(err){
-                    console.log(err);
                     reject(err);
                 }else{
                     resolve(stops);
@@ -61,6 +60,9 @@ module.exports = {
                             }
                         },
                         {
+                            '$match': {'properties.approved': true}
+                        },
+                        {
                             '$sort':{'distance': 1} //closest fist
                         },
                         {
@@ -68,10 +70,8 @@ module.exports = {
                         }
                     ], function(err, results){
                         if(err){
-                            console.log(err);
                             reject(err);
                         }else{
-                            console.log(results);
                             resolve(results);
                         }
                     }
@@ -89,6 +89,9 @@ module.exports = {
                                 'spherical': true,
                                 'maxDistance': 1000
                             }
+                        },
+                        {
+                            '$match': {'properties.approved': true}
                         },
                         {
                             '$sort':{'distance': 1}
@@ -174,7 +177,6 @@ module.exports = {
                     }
                 ], function(err, results){
                     if(err){
-                        console.log(err);
                         reject(err);
                     }else{
                         resolve(results);

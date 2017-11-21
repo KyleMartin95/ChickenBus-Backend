@@ -15,6 +15,11 @@ var stopSchema = new Schema({
         routes: {
             type: [mongoose.Schema.Types.ObjectId],
             ref: 'Route'
+        },
+        approved: {
+            type: Boolean,
+            required: true,
+            default: false
         }
     }
 });

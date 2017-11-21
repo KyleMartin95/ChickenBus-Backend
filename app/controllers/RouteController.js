@@ -22,13 +22,16 @@ var RouteController = {
         });
     },
 
-    findById: (id) => {
+    findById: (id, approved) => {
         return new Promise(function(resolve, reject){
             Route.find({
-                _id: id
+                _id: id,
+                'properties.approved': approved
             }, function(err, route){
                 if(err){
                     reject(err);
+                }else if(!route){
+                    reject('No route found!');
                 }else{
                     resolve(route);
                 }
@@ -78,7 +81,6 @@ var RouteController = {
             var routeTimes = req.body.times;
             var routeDuration = req.body.duration;
             var routeNotes = req.body.notes;
-            console.log(req.body);
 
             Route.create({
                 type: 'Feature',
@@ -115,7 +117,7 @@ var RouteController = {
             if(routeAndStops.status === 0){
                 reject('No route found');
             }else if(routeAndStops.status === 1){
-                RouteController.findById(routeAndStops.routeId)
+                RouteController.findById(routeAndStops.routeId, true)
                     .then((route) => {
                         routeInfo = route[0];
                         return RouteController.getStops(route[0]._id);
@@ -137,19 +139,21 @@ var RouteController = {
                             ]
                         };
                         resolve(tripInfo);
+                    }).catch((err) => {
+                        reject(err);
                     });
             }else{
                 var route1Info, route2Info, route1Stops, route2Stops;
-                RouteController.findById(routeAndStops.routes[0].route1Id)
+                RouteController.findById(routeAndStops.routes[0].route1Id, true)
                     .then((route) => {
                         route1Info = route[0];
-                        return RouteController.findById(routeAndStops.routes[0].route2Id);
+                        return RouteController.findById(routeAndStops.routes[0].route2Id, true);
                     }).then((route) => {
                         route2Info = route[0];
-                        return RouteController.getStops(route1Info._id);
+                        return RouteController.getStops(route1Info._id, true);
                     }).then((stops) => {
                         route1Stops = flipLatLng(stops);
-                        return RouteController.getStops(route2Info._id);
+                        return RouteController.getStops(route2Info._id, true);
                     }).then((stops) => {
                         route2Stops = flipLatLng(stops);
                         var firstRouteOrigDest = GoogleMapsController.getDirections({
@@ -186,7 +190,7 @@ var RouteController = {
 
     getStops: (routeId) => {
         return new Promise((resolve, reject) => {
-            Stop.find({'properties.routes': routeId},
+            Stop.find({'properties.routes': routeId, 'properties.approved': true},
                 (err, stops) => {
                     if(err){
                         reject(err);
