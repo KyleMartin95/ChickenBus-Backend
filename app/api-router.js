@@ -61,18 +61,22 @@ router
             });
     });
 
-// router
-//     .route('/api/routes/csv')
-//     .get((req, res) => {
-//         routeController.getCSV(req, res)
-//             .then((output) => {
-//                 console.log('CSV: ', output);
-//                 res.status(200).json(output);
-//             }).catch((err) => {
-//                 console.log(err);
-//                 res.sendStatus(500);
-//             });
-//     });
+/**
+ * call to create many routes with name, stops, and cost from csv
+ */
+
+router
+    .route('/api/routes/csv')
+    .post((req, res) => {
+        routeController.bulkAdd(req, res)
+            .then((output) => {
+                console.log('Got it');
+                res.status(200).json(output);
+            }).catch((err) => {
+                console.log(err);
+                res.sendStatus(500);
+            });
+    });
 
 /**********************Stops**************************/
 

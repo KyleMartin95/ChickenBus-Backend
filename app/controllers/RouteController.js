@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const parse = require('csv-parse');
 const Route = mongoose.model('Route');
 const Stop = mongoose.model('Stop');
 
@@ -79,7 +78,10 @@ var RouteController = {
             var routeTimes = req.body.times;
             var routeDuration = req.body.duration;
             var routeNotes = req.body.notes;
+          
             console.log(req.body);
+            console.log(req.body.stops);
+            
 
             Route.create({
                 type: 'Feature',
@@ -196,19 +198,23 @@ var RouteController = {
                     }
                 });
         });
-    }
+    },
 
-    // getCSV: () => {
-    //     return new Promise((resolve, reject) => {
-    //         readCSV({csv}, function(err, output){
-    //             if(err){
-    //                 reject(err);
-    //             }else{
-    //                 resolve(output);
-    //             }
-    //         });
-    //     });
-    // }
+    bulkAdd: (req, res) => {
+        return new Promise((resolve, reject) => {
+            console.log(req.body);
+            req.body.forEach((route) =>{
+                var formatedJSON = formatJSON(route);
+                RouteController.create(formatedJSON);
+            }, function(err, route){
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(route);
+                }
+            });
+        });
+    }
 };
 
 module.exports = RouteController;
@@ -420,8 +426,55 @@ function findMidpoint(lng1, lat1, lng2, lat2){
 
 }
 
-// function readCSV(csv){
-//     columns = [];
-//     parse(csv, {columns: true}, function(err, output){});
-//     return output;
+function formatJSON(route){
+    return new Promise((resolve, reject) => {  
+        // console.log(routeData);               
+        var routeName = route.Name;
+        var routeCost = route.Cost;
+        var routeDuration = route.Duration;
+        var routeNotes = route.Notes;
+    
+        var stops = (route.Stops).split(',');   
+        // var routeTimes = route.times; 
+        var obj = {};
+        var key = 'body';
+        obj[key] = [];
+         
+        var routeStops = [];
+        var promises = [];
+        var address;        
+        for(var i=0; i<stops.length; i++){
+            var p = GoogleMapsController.getCoords(stops[i]);
+            promises[i] = p;
+        } 
+        Promise.all(promises).then(routeStops =>{
+            console.log(routeStops);              
+            var data = {
+                stops: routeStops,
+                name: routeName,
+                cost: routeCost,
+                times: [-1],
+                duration: routeDuration,
+                notes: routeNotes
+            };
+            console.log('data:' + data);
+            obj[key].push(data);
+            var formatedJSON = JSON.stringify(obj);
+            return(formatedJSON);
+        });      
+    }).catch((err) => {
+        reject(err);
+    });
+}
+
+// function coord(stop){
+//     var address = GoogleMapsController.getCoords(stops[i])
+//         .then((address) => {
+//             // console.log(address);                                        
+//             console.log(address);
+//             return address;                                         
+//         }).catch((err) => {
+//             console.log(err);                    
+//         });
 // }
+
