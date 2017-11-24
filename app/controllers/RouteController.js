@@ -7,8 +7,13 @@ const GoogleMapsController = require('./GoogleMapsController');
 
 var RouteController = {
 
-    /*
+    /**
     *   Returns all routes
+    *
+    * @param {object}: req
+    * @param {object}: res
+    *
+    * @returns {[routes]}
     */
     find: (req, res) => {
         return new Promise((resolve, reject) => {
@@ -21,6 +26,13 @@ var RouteController = {
             });
         });
     },
+
+    /**
+    * @param {string}: id
+    * @param {boolean}: approved
+    *
+    * @returns {[routes]}
+    */
 
     findById: (id, approved) => {
         return new Promise(function(resolve, reject){
@@ -39,11 +51,16 @@ var RouteController = {
         });
     },
 
-    /*
+    /**
     *   Gets origin and destination from query string
     *   Finds stops within a certain radius of origin and destination
     *   Calls findRoute() with that information
     *   Uses what findRoute() returns to call Google maps controller
+    *
+    * @param {object}: req
+    * @param {object}: res
+    *
+    * @returns {object}
     */
     findNear: (req, res) => {
         return new Promise((resolve, reject) => {
@@ -73,7 +90,13 @@ var RouteController = {
         });
     },
 
-    create: (req, res) => {
+    /**
+    * @param {object}: req
+    *
+    * @returns {object}: created route object
+    */
+
+    create: (req) => {
         return new Promise((resolve, reject) => {
             var routeName = req.body.name;
             var routeCost = req.body.cost;
@@ -109,6 +132,12 @@ var RouteController = {
             });
         });
     },
+
+    /**
+    * @param {object}: routeAndStops
+    *
+    * @returns {object}
+    */
 
     compileTripInfo: (routeAndStops) => {
         return new Promise((resolve, reject) => {
@@ -188,6 +217,12 @@ var RouteController = {
         });
     },
 
+    /**
+    * @param {string}: routeId
+    *
+    * @returns {[stops]}
+    */
+
     getStops: (routeId) => {
         return new Promise((resolve, reject) => {
             Stop.find({'properties.routes': routeId, 'properties.approved': true},
@@ -220,10 +255,16 @@ if (typeof (Number.prototype.toDeg) === 'undefined') {
     };
 }
 
-/*
+/**
 *   Double for loop compares the routes of each origin and destination stop
 *   If there is a match then we know that there is a route between them
 *   If there is no match then it goes on to try to find connections
+*
+* @param {array}: stopsNearOrig
+* @param {array}: stopsNearDest
+* @param {object}: origDestCoords
+*
+* @returns {object}
 */
 function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
@@ -252,11 +293,17 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     });
 }
 
-/*
+/**
 *   This function works by "drawing" a circle with a diameter of the length between
 *   the origin and destination and the middle at the midpoint between those two
 *   locations. It then finds all stops within this circle and looks for routes
 *   that go between the origin and this stop and the destination and this stop
+*
+* @param {array}: stopsNearOrig
+* @param {array}: stopsNearDest
+* @param {object}: origDestCoords
+*
+* @returns {object}
 */
 
 function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
@@ -337,11 +384,16 @@ function findConnection(stopsNearOrig, stopsNearDest, origDestCoords){
 
 }
 
-/*
+/**
 *   used for data entry. when a route is made the corresponding stops have to be
 *   added. it loops through each stop and sees if there are any stops already at
 *   that location. if it finds one it adds the route to the stop. if not, it
 *   adds the new stop to the database and then adds the new route to the stop
+*
+* @param {string}: routeId
+* @param {array}: routeStops
+*
+* @returns {}
 */
 
 function addStopsToRoute(routeId, routeStops){
@@ -373,12 +425,23 @@ function addStopsToRoute(routeId, routeStops){
     });
 }
 
+/**
+* @param {object}: stops
+*
+* @returns {object}
+*/
 function flipLatLng(stops){
     for(var i = 0; i < stops.length; i++){
         stops[i].geometry.coordinates = stops[i].geometry.coordinates.reverse();
     }
     return stops;
 }
+
+/**
+* @param {object}: origDestCoords
+*
+* @returns {int}
+*/
 
 function findDistance(origDestCoords){
     var R = 6371; // Radius of the earth in km
@@ -391,6 +454,15 @@ function findDistance(origDestCoords){
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); //distance in rads
     return c;
 }
+
+/**
+* @param {int}: lng1
+* @param {int}: lat1
+* @param {int}: lng2
+* @param {int}: lat2
+*
+* @returns {object}
+*/
 
 function findMidpoint(lng1, lat1, lng2, lat2){
     //-- Longitude difference

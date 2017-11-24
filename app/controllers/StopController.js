@@ -7,6 +7,8 @@ module.exports = {
 
     /**
      * find stop in db
+     *
+     * @returns {[stops]}: array of stops
      */
     find: (req, res) => {
         return new Promise((resolve, reject) => {
@@ -22,6 +24,9 @@ module.exports = {
 
     /**
      * Find stop in db based on id
+     *
+     * @param {string}: id - stop ID
+     * @returns {[stops]}: array of stop objects
      */
     findById: (id) => {
         return new Promise((resolve, reject) => {
@@ -39,6 +44,10 @@ module.exports = {
 
     /**
      * return stops near the given coordinate
+     *
+     * @param {object}: location - location object containing lng, location
+     * @param {boolean}: unwind - whether or not the query should use unwind operator
+     * @returns {[stops]} array of stops
      */
     findNear: (location, unwind) => {
         return new Promise((resolve, reject) => {
@@ -108,9 +117,15 @@ module.exports = {
         });
     },
 
-    /*
-    *   Creates a new stop. Coordinates field is an array [long, lat]. Route
-    *   field is an array of route id's that run through this top
+    /**
+    *  Creates a new stop. Coordinates field is an array [long, lat]. Route
+    *  field is an array of route id's that run through this top
+    *
+    * @param {string}: routeId - id of route that should be added to
+    *                  created stops list of associated routes
+    * @param {object}: stop - object contain the to be created stops info
+    *
+    * @returns {object}: stop object created in db
     */
     create: (routeId, stop) => {
         return new Promise((resolve, reject) => {
@@ -133,8 +148,13 @@ module.exports = {
         });
     },
 
-    /*
+    /**
     *   Adds routeIds to a stop with a specified id
+    *
+    * @param {string}: routeId
+    * @param {string}: stopId
+    *
+    * @returns {object}
     */
 
     addRoute: (routeId, stopId) => {
@@ -153,10 +173,15 @@ module.exports = {
         });
     },
 
-    /*
+    /**
     *   Finds all stops within a certain radius of a circle with a specified
     *   midpoint. Radius is in degrees. Unwinds the result on the routes to make
     *   looping through the result easier
+    *
+    * @param {int}: radius
+    * @param {int}: midpoint
+    *
+    * @returns {[stops]}
     */
 
     findStopsInRadius: (radius, midpoint) => {
