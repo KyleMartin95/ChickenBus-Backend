@@ -27,8 +27,10 @@ passport.use('local-login', localLoginStrategy);
 const authCheckMiddleware = require('./app/middleware/auth-check');
 app.use('/api/protected', authCheckMiddleware); //probably needs to be changed
 
-const routes = require('./app/api-router');
-app.use('/', routes); // configure our routes
+const authRoutes = require('./app/api/auth-router');
+const apiRoutes = require('./app/api/api-router');
+app.use('/auth', authRoutes);
+app.use('/api', apiRoutes);
 
 // set port and start app on 3000
 const port = process.env.PORT || 3000;
