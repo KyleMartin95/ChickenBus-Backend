@@ -13,6 +13,131 @@ Note: `npm start` is used for production and will not work on local machine
 
 ## API Documentation
 
+### Get All Bus Routes
+----
+  Returns json data on all bus routes
+
+* **URL**
+
+  /routes
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+    None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{
+        success: true,
+        message: "Found routes",
+        data: [
+            {
+                id : 4,
+                geometry: {
+                    coordinates: [lng, lat]
+                },
+                properties: {
+                    name: "Managua to Masaya",
+                    cost: 20,
+                    departureTimes: [
+                        sunday: [0700, 0800],
+                        monday: [0700, 0800],
+                        tuesday: ...
+                    ],
+                    duration: 50
+                    notes: The bus has a lot of chickens on it
+                    approved: true
+                }
+            },
+            {
+                id : 5,
+                geometry: {
+                    coordinates: [lng, lat]
+                },
+                properties: {
+                    routes: [12, 44, 32]
+                    approved: true
+                }
+            }
+        ]
+    }`
+
+* **Error Response:**
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `{
+        success: false,
+        message: "No stops found"
+     }`
+
+### Get All Bus Stops
+----
+  Returns json data on all stops
+
+* **URL**
+
+  /stops
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+    None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{
+        success: true,
+        message: "Found stops",
+        data: [
+            {
+                id : 4,
+                geometry: {
+                    coordinates: [lng, lat]
+                },
+                properties: {
+                    routes: [12, 44, 32]
+                    approved: true
+                }
+            },
+            {
+                id : 5,
+                geometry: {
+                    coordinates: [lng, lat]
+                }
+                properties: {
+                    routes: [12, 44, 32]
+                    approved: true
+                }
+            }
+        ]
+    }`
+
+* **Error Response:**
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `{
+        success: false,
+        message: "No stops found"
+     }`
+
+
 **Get All Users**
 ----
   Returns json data on all users
