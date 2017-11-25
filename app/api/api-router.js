@@ -114,4 +114,21 @@ router
             });
     });
 
+/*******************************Users******************************************/
+
+router
+    .route('/users')
+    .get((req, res) => {
+        UserController.find()
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                res.status(500).send(err);
+            });
+    });
+
 module.exports = router;
