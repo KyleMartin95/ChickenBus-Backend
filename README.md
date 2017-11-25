@@ -19,7 +19,7 @@ Note: `npm start` is used for production and will not work on local machine
 
 * **URL**
 
-  /routes
+  api/routes
 
 * **Method:**
 
@@ -85,7 +85,7 @@ Note: `npm start` is used for production and will not work on local machine
 
 * **URL**
 
-  /stops
+  api/stops
 
 * **Method:**
 
@@ -144,7 +144,7 @@ Note: `npm start` is used for production and will not work on local machine
 
 * **URL**
 
-  /users
+  api/users
 
 * **Method:**
 
@@ -195,7 +195,7 @@ Note: `npm start` is used for production and will not work on local machine
 
 * **URL**
 
-  /users/:id
+  api/users/:id
 
 * **Method:**
 
@@ -242,7 +242,7 @@ Note: `npm start` is used for production and will not work on local machine
 
  * **URL**
 
-   /users/username/:username
+   api/users/username/:username
 
  * **Method:**
 
