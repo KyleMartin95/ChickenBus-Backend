@@ -10,13 +10,22 @@ module.exports = {
      *
      * @returns {[stops]}: array of stops
      */
-    find: (req, res) => {
+    find: () => {
         return new Promise((resolve, reject) => {
             Stop.find({}, function(err, stops){
                 if(err){
                     reject(err);
+                }else if(!stops){
+                    resolve({
+                        success: false,
+                        message: 'No stops found'
+                    });
                 }else{
-                    resolve(stops);
+                    resolve({
+                        success: true,
+                        message: 'Found stops',
+                        data: stops
+                    });
                 }
             });
         });

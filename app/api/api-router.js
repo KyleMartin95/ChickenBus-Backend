@@ -24,11 +24,15 @@ router
  */
 
 router
-    .route('/routes/find')
+    .route('/routes')
     .get((req, res) => {
-        routeController.find(req,res)
-            .then((routes) => {
-                res.status(200).json(routes);
+        routeController.find()
+            .then((result) => {
+                if(!result.succes){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
@@ -68,6 +72,25 @@ router
     });
 
 /**********************Stops**************************/
+
+/**
+*
+*/
+router
+    .route('/stops')
+    .get((req, res) => {
+        stopController.find()
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                console.log(err);
+                res.sendStatus(500);
+            });
+    });
 
 /**
  * call to find stops near a coordinate

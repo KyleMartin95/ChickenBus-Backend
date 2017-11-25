@@ -10,18 +10,24 @@ var RouteController = {
     /**
     *   Returns all routes
     *
-    * @param {object}: req
-    * @param {object}: res
-    *
     * @returns {[routes]}
     */
-    find: (req, res) => {
+    find: () => {
         return new Promise((resolve, reject) => {
             Route.find({}, function(err, routes){
                 if(err){
                     reject(err);
+                }else if(!routes){
+                    resolve({
+                        success: false,
+                        message: 'No routes found'
+                    });
                 }else{
-                    resolve(routes);
+                    resolve({
+                        success: true,
+                        message: 'Found Routes',
+                        data: routes
+                    });
                 }
             });
         });
