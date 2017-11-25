@@ -131,4 +131,38 @@ router
             });
     });
 
+router
+    .route('/users/:id')
+    .get((req, res) => {
+        let id = req.params.id;
+
+        UserController.findById(id)
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                res.status(500).send(err);
+            });
+    });
+
+router
+    .route('/users/username/:username')
+    .get((req, res) => {
+        let username= req.params.username;
+
+        UserController.findByUsername(username)
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                res.status(500).send(err);
+            });
+    });
+
 module.exports = router;
