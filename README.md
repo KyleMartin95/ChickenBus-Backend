@@ -138,7 +138,7 @@ Note: `npm start` is used for production and will not work on local machine
      }`
 
 
-**Get All Users**
+### Get All Users
 ----
   Returns json data on all users
 
@@ -189,7 +189,7 @@ Note: `npm start` is used for production and will not work on local machine
      }`
 
 
-**Get One User By ID**
+### Get One User by ID
 ----
   Returns json data on one user
 
@@ -236,7 +236,7 @@ Note: `npm start` is used for production and will not work on local machine
      }`
 
 
- **Get One User By Username**
+### Get One User by Username
  ----
    Returns json data on one user
 
