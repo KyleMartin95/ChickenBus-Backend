@@ -10,3 +10,51 @@
 7. Run `npm run dev`
 
 Note: `npm start` is used for production and will not work on local machine
+
+## API Documentation
+
+**Get One User By ID**
+----
+  Returns json data on one user
+
+* **URL**
+
+  /users/:id
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+   **Required:**
+
+   `id=[integer]`
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{
+        success: true,
+        message: "Found user"
+        data: [
+            {
+                id : 12,
+                username: "John19",
+                email: "john19@email.com",
+                permissionLevel: "0"
+            }
+        ]
+    }`
+
+* **Error Response:**
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `{
+        success: false,
+        message: "User not found"
+     }`
