@@ -201,10 +201,14 @@ var RouteController = {
 
     bulkAdd: (req, res) => {
         return new Promise((resolve, reject) => {
-            console.log(req.body);
+            // console.log(req.body);
             req.body.forEach((route) =>{
-                var formatedJSON = formatJSON(route);
-                RouteController.create(formatedJSON);
+                formatJSON(route).then((formatedJSON) =>{
+                    // console.log(formatedJSON);
+                    RouteController.create(formatedJSON);
+                }).catch((err)=>{
+                    reject(err);
+                });
             }, function(err, route){
                 if(err){
                     reject(err);
@@ -447,23 +451,41 @@ function formatJSON(route){
             promises[i] = p;
         } 
         Promise.all(promises).then(routeStops =>{
-            console.log(routeStops);              
+            // console.log(routeStops);
+            var formatedStops = [];
+            routeStops.forEach((stop) => {
+                var lat = stop.lat;
+                var lng = stop.lng;
+                var formatedStop = {
+                    coordinates:[
+                        lng,
+                        lat
+                    ]
+                };
+                formatedStops.push(formatedStop);
+            });
+            // console.log(formatedStops);
             var data = {
-                stops: routeStops,
+                stops: formatedStops,
                 name: routeName,
                 cost: routeCost,
                 times: [-1],
                 duration: routeDuration,
                 notes: routeNotes
             };
-            console.log('data:' + data);
+            // console.log(data);
             obj[key].push(data);
-            var formatedJSON = JSON.stringify(obj);
-            return(formatedJSON);
-        });      
-    }).catch((err) => {
-        reject(err);
-    });
+            // var formatedJSON = JSON.stringify(obj);
+            // console.log(obj);
+            return(obj);
+        }).then((formatedJSON) =>{
+            if(formatedJSON){
+                resolve(formatedJSON);
+            }
+        }).catch((err) => {
+            reject(err);
+        }); 
+    });   
 }
 
 
