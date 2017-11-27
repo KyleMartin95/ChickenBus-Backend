@@ -28,7 +28,7 @@ router
     .get((req, res) => {
         routeController.find()
             .then((result) => {
-                if(!result.succes){
+                if(!result.success){
                     res.status(404).json(result);
                 }else{
                     res.status(200).json(result);
