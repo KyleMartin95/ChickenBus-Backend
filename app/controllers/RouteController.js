@@ -110,12 +110,6 @@ var RouteController = {
             var routeTimes = req.body.times;
             var routeDuration = req.body.duration;
             var routeNotes = req.body.notes;
-<<<<<<< HEAD
-=======
-          
-            console.log(req.body);
-            // console.log(req.body.stops);
->>>>>>> sprint6-eric
 
             Route.create({
                 type: 'Feature',
