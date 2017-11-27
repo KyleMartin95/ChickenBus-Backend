@@ -38,6 +38,7 @@ router
     .post((req, res) => {
         routeController.create(req, res)
             .then((route) => {
+                console.log(route);
                 res.status(200).json(route);
             }).catch((err) => {
                 console.log(err);

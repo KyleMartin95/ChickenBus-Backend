@@ -80,7 +80,7 @@ var RouteController = {
             var routeNotes = req.body.notes;
           
             console.log(req.body);
-            console.log(req.body.stops);
+            // console.log(req.body.stops);
 
             Route.create({
                 type: 'Feature',
@@ -201,20 +201,18 @@ var RouteController = {
 
     bulkAdd: (req, res) => {
         return new Promise((resolve, reject) => {
-            // console.log(req.body);
             req.body.forEach((route) =>{
                 formatJSON(route).then((formatedJSON) =>{
-                    // console.log(formatedJSON);
-                    RouteController.create(formatedJSON);
+                    RouteController.create(formatedJSON).then((createdRoute) =>{
+
+                        resolve(createdRoute);
+
+                    }).catch((err)=>{
+                        reject(err);
+                    });
                 }).catch((err)=>{
                     reject(err);
                 });
-            }, function(err, route){
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(route);
-                }
             });
         });
     }
@@ -430,18 +428,13 @@ function findMidpoint(lng1, lat1, lng2, lat2){
 }
 
 function formatJSON(route){
-    return new Promise((resolve, reject) => {  
-        // console.log(routeData);               
-        var routeName = route.Name;
-        var routeCost = route.Cost;
-        var routeDuration = route.Duration;
-        var routeNotes = route.Notes;
-    
-        var stops = (route.Stops).split(',');   
-        // var routeTimes = route.times; 
-        var obj = {};
-        var key = 'body';
-        obj[key] = [];
+    return new Promise((resolve, reject) => {               
+        var routeName = nil(route.Name);
+        var routeCost = nil(route.Cost);
+        var routeDuration = nil(route.Duration);
+        var routeNotes = nil(route.Notes);
+        var checkedStops = nil(route.Stops);
+        var stops = (checkedStops).split(',');   
          
         var routeStops = [];
         var promises = [];
@@ -451,7 +444,6 @@ function formatJSON(route){
             promises[i] = p;
         } 
         Promise.all(promises).then(routeStops =>{
-            // console.log(routeStops);
             var formatedStops = [];
             routeStops.forEach((stop) => {
                 var lat = stop.lat;
@@ -464,19 +456,18 @@ function formatJSON(route){
                 };
                 formatedStops.push(formatedStop);
             });
-            // console.log(formatedStops);
             var data = {
                 stops: formatedStops,
                 name: routeName,
                 cost: routeCost,
-                times: [-1],
+                departureTimes: [-1],
                 duration: routeDuration,
                 notes: routeNotes
             };
+            var obj = {
+                body: data
+            };
             // console.log(data);
-            obj[key].push(data);
-            // var formatedJSON = JSON.stringify(obj);
-            // console.log(obj);
             return(obj);
         }).then((formatedJSON) =>{
             if(formatedJSON){
@@ -486,6 +477,13 @@ function formatJSON(route){
             reject(err);
         }); 
     });   
+}
+
+function nil(value) {
+    if(typeof value == 'undefined'){
+        return '';
+    } 
+    return value;
 }
 
 
