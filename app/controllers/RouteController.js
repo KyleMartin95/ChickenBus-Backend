@@ -110,6 +110,12 @@ var RouteController = {
             var routeTimes = req.body.times;
             var routeDuration = req.body.duration;
             var routeNotes = req.body.notes;
+<<<<<<< HEAD
+=======
+          
+            console.log(req.body);
+            // console.log(req.body.stops);
+>>>>>>> sprint6-eric
 
             Route.create({
                 type: 'Feature',
@@ -239,6 +245,24 @@ var RouteController = {
                         resolve(stops);
                     }
                 });
+        });
+    },
+
+    bulkAdd: (req, res) => {
+        return new Promise((resolve, reject) => {
+            req.body.forEach((route) =>{
+                formatJSON(route).then((formatedJSON) =>{
+                    RouteController.create(formatedJSON).then((createdRoute) =>{
+
+                        resolve(createdRoute);
+
+                    }).catch((err)=>{
+                        reject(err);
+                    });
+                }).catch((err)=>{
+                    reject(err);
+                });
+            });
         });
     }
 };
@@ -488,3 +512,64 @@ function findMidpoint(lng1, lat1, lng2, lat2){
     return {lng: lng3.toDeg(), lat: lat3.toDeg()};
 
 }
+
+function formatJSON(route){
+    return new Promise((resolve, reject) => {               
+        var routeName = nil(route.Name);
+        var routeCost = nil(route.Cost);
+        var routeDuration = nil(route.Duration);
+        var routeNotes = nil(route.Notes);
+        var checkedStops = nil(route.Stops);
+        var stops = (checkedStops).split(',');   
+         
+        var routeStops = [];
+        var promises = [];
+        var address;        
+        for(var i=0; i<stops.length; i++){
+            var p = GoogleMapsController.getCoords(stops[i]);
+            promises[i] = p;
+        } 
+        Promise.all(promises).then(routeStops =>{
+            var formatedStops = [];
+            routeStops.forEach((stop) => {
+                var lat = stop.lat;
+                var lng = stop.lng;
+                var formatedStop = {
+                    coordinates:[
+                        lng,
+                        lat
+                    ]
+                };
+                formatedStops.push(formatedStop);
+            });
+            var data = {
+                stops: formatedStops,
+                name: routeName,
+                cost: routeCost,
+                departureTimes: [-1],
+                duration: routeDuration,
+                notes: routeNotes
+            };
+            var obj = {
+                body: data
+            };
+            // console.log(data);
+            return(obj);
+        }).then((formatedJSON) =>{
+            if(formatedJSON){
+                resolve(formatedJSON);
+            }
+        }).catch((err) => {
+            reject(err);
+        }); 
+    });   
+}
+
+function nil(value) {
+    if(typeof value == 'undefined'){
+        return '';
+    } 
+    return value;
+}
+
+

@@ -56,6 +56,22 @@ router
     });
 
 /**
+ * call to create many routes with name, stops, and cost from csv
+ */
+
+router
+    .route('/routes/csv')
+    .post((req, res) => {
+        routeController.bulkAdd(req, res)
+            .then((output) => {
+                res.status(200).json(output);
+            }).catch((err) => {
+                console.log(err);
+                res.sendStatus(500);
+            });
+    });
+
+/**
  * Call with coordiantes of origin and destination to find the direction of a route near them
  */
 
