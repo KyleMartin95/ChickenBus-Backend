@@ -85,15 +85,15 @@ Updates Bus Route Info Based on ID
 
 * **URL**
 
-api/routes/:id
+    api/routes/:id
 
 * **Method:**
 
-`PUT`
+    `PUT`
 
 *  **URL Params**
 
-  id of Route to be updated
+    id of Route to be updated
 
 * **Data Params**
 
@@ -151,15 +151,15 @@ Deletes a Bus Route Based On ID
 
 * **URL**
 
-api/routes/:id
+    api/routes/:id
 
 * **Method:**
 
-`DELETE`
+    `DELETE`
 
 *  **URL Params**
 
-  id of Route to be deleted
+    id of Route to be deleted
 
 * **Data Params**
 
