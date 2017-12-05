@@ -79,6 +79,106 @@ Note: `npm start` is used for production and will not work on local machine
         message: "No stops found"
      }`
 
+### Update Bus Route
+---
+Updates Bus Route Info Based on ID
+
+* **URL**
+
+api/routes/:id
+
+* **Method:**
+
+`PUT`
+
+*  **URL Params**
+
+  id of Route to be updated
+
+* **Data Params**
+
+    json data of info to be updated
+
+* **Success Response:**
+
+* **Code:** 200 <br />
+  **Content:** `{
+      success: true,
+      message: "Updated Route successfully",
+      data: [
+          {
+              id : 4,
+              geometry: {
+                  coordinates: [lng, lat]
+              },
+              properties: {
+                  name: "Managua to Masaya",
+                  cost: 20,
+                  departureTimes: [
+                      sunday: [0700, 0800],
+                      monday: [0700, 0800],
+                      tuesday: ...
+                  ],
+                  duration: 50
+                  notes: The bus has a lot of chickens on it
+                  approved: true
+              }
+          },
+          {
+              id : 5,
+              geometry: {
+                  coordinates: [lng, lat]
+              },
+              properties: {
+                  routes: [12, 44, 32]
+                  approved: true
+              }
+          }
+      ]
+  }`
+
+* **Error Response:**
+
+* **Code:** 404 NOT FOUND <br />
+  **Content:** `{
+      success: false,
+      message: "Route not found"
+   }`
+
+### Delete Bus Route
+---
+Deletes a Bus Route Based On ID
+
+* **URL**
+
+api/routes/:id
+
+* **Method:**
+
+`DELETE`
+
+*  **URL Params**
+
+  id of Route to be deleted
+
+* **Data Params**
+
+    None
+
+* **Success Response:**
+
+* **Code:** 200 <br />
+  **Content:**
+
+* **Error Response:**
+
+* **Code:** 404 NOT FOUND <br />
+  **Content:** `{
+      success: false,
+      message: "Route not found"
+   }`
+
+
 ### Get All Bus Stops
 ----
   Returns json data on all stops
