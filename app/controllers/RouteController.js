@@ -139,6 +139,21 @@ var RouteController = {
         });
     },
 
+    remove: (routeId) => {
+        return new Promise((resolve, reject) => {
+            Route.remove({_id: routeId}, function(err){
+                if(err){
+                    reject(err);
+                }else{
+                    resolve({
+                        success: true,
+                        message: 'Route Deleted Successfully'
+                    });
+                }
+            });
+        });
+    },
+
     /**
     * @param {object}: routeAndStops
     *
@@ -508,21 +523,21 @@ function findMidpoint(lng1, lat1, lng2, lat2){
 }
 
 function formatJSON(route){
-    return new Promise((resolve, reject) => {               
+    return new Promise((resolve, reject) => {
         var routeName = nil(route.Name);
         var routeCost = nil(route.Cost);
         var routeDuration = nil(route.Duration);
         var routeNotes = nil(route.Notes);
         var checkedStops = nil(route.Stops);
-        var stops = (checkedStops).split(',');   
-         
+        var stops = (checkedStops).split(',');
+
         var routeStops = [];
         var promises = [];
-        var address;        
+        var address;
         for(var i=0; i<stops.length; i++){
             var p = GoogleMapsController.getCoords(stops[i]);
             promises[i] = p;
-        } 
+        }
         Promise.all(promises).then(routeStops =>{
             var formatedStops = [];
             routeStops.forEach((stop) => {
@@ -555,15 +570,13 @@ function formatJSON(route){
             }
         }).catch((err) => {
             reject(err);
-        }); 
-    });   
+        });
+    });
 }
 
 function nil(value) {
     if(typeof value == 'undefined'){
         return '';
-    } 
+    }
     return value;
 }
-
-
