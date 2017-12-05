@@ -89,8 +89,26 @@ router
 
 router
     .route('/routes/:id')
+    .put((req, res) => {
+        let id = req.params.id;
+        console.log(req.body);
+        routeController.update(id, req.body)
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                console.log(err);
+                res.status(500).send(err);
+            });
+    });
+
+router
+    .route('/routes/:id')
     .delete((req, res) => {
-        var id = req.params.id;
+        let id = req.params.id;
         routeController.remove(id)
             .then((result) => {
                 if(!result.success){
@@ -152,6 +170,40 @@ router
             }).catch((err) => {
                 console.log(err);
                 res.sendStatus(500);
+            });
+    });
+
+router
+    .route('/stops/:id')
+    .put((req, res) => {
+        let id = req.params.id;
+        stopController.update(id, req.body)
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                console.log(err);
+                res.status(500).send(err);
+            });
+    });
+
+router
+    .route('/stops/:id')
+    .delete((req, res) => {
+        let id = req.params.id;
+        stopController.remove(id)
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                console.log(err);
+                res.status(500).send(err);
             });
     });
 
@@ -217,6 +269,41 @@ router
                     res.status(200).json(result);
                 }
             }).catch((err) => {
+                res.status(500).send(err);
+            });
+    });
+
+router
+    .route('/users/:id')
+    .put((req, res) => {
+        let id = req.params.id;
+        UserController.update(id, req.body)
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                console.log(err);
+                res.status(500).send(err);
+            });
+    });
+
+
+router
+    .route('/users/:id')
+    .delete((req, res) => {
+        let id = req.params.id;
+        UserController.remove(id)
+            .then((result) => {
+                if(!result.success){
+                    res.status(404).json(result);
+                }else{
+                    res.status(200).json(result);
+                }
+            }).catch((err) => {
+                console.log(err);
                 res.status(500).send(err);
             });
     });

@@ -65,7 +65,48 @@ var UserController = {
                 }
             });
         });
-    }
+    },
+
+    update: (userId, updates) => {
+        return new Promise((resolve, reject) => {
+            User.findOneAndUpdate({_id: routeId}, {$set: updates}, {new: true}, function(err, user){
+                if(err){
+                    reject(err);
+                }else if(!user){
+                    resolve({
+                        success: false,
+                        message: 'Could not find user'
+                    });
+                }else{
+                    resolve({
+                        success: true,
+                        message: 'User updated successfully',
+                        data: user
+                    });
+                }
+            });
+        });
+    },
+
+    remove: (userId) => {
+        return new Promise((resolve, reject) => {
+            User.remove({_id: userId}, function(err, user){
+                if(err){
+                    reject(err);
+                }else if (!user){
+                    resolve({
+                        success: false,
+                        message: 'User with that ID was not found'
+                    });
+                }else{
+                    resolve({
+                        success: true,
+                        message: 'User Deleted Successfully'
+                    });
+                }
+            });
+        });
+    },
 };
 
 module.exports = UserController;

@@ -157,6 +157,47 @@ module.exports = {
         });
     },
 
+    update: (stopId, updates) => {
+        return new Promise((resolve, reject) => {
+            Stop.findOneAndUpdate({_id: stopId}, {$set: updates}, {new: true}, function(err, stop){
+                if(err){
+                    reject(err);
+                }else if(!stop){
+                    resolve({
+                        success: false,
+                        message: 'Could not find stop'
+                    });
+                }else{
+                    resolve({
+                        success: true,
+                        message: 'Stop Updated Successfully',
+                        data: stop
+                    });
+                }
+            });
+        });
+    },
+
+    remove: (stopId) => {
+        return new Promise((resolve, reject) => {
+            Stop.remove({_id: stopId}, function(err, stop){
+                if(err){
+                    reject(err);
+                }else if (!stop){
+                    resolve({
+                        success: false,
+                        message: 'Stop with that ID was not found'
+                    });
+                }else{
+                    resolve({
+                        success: true,
+                        message: 'Stop Deleted Successfully'
+                    });
+                }
+            });
+        });
+    },
+
     /**
     *   Adds routeIds to a stop with a specified id
     *

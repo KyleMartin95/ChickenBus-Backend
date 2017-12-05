@@ -139,11 +139,38 @@ var RouteController = {
         });
     },
 
-    remove: (routeId) => {
+    update: (routeId, updates) => {
         return new Promise((resolve, reject) => {
-            Route.remove({_id: routeId}, function(err){
+            Route.findOneAndUpdate({_id: routeId}, {$set: updates}, {new: true}, function(err, route){
+                console.log(route);
                 if(err){
                     reject(err);
+                }else if(!route){
+                    resolve({
+                        success: false,
+                        message: 'Could not find route'
+                    });
+                }else{
+                    resolve({
+                        success: true,
+                        message: 'Route Updated Successfully',
+                        data: route
+                    });
+                }
+            });
+        });
+    },
+
+    remove: (routeId) => {
+        return new Promise((resolve, reject) => {
+            Route.remove({_id: routeId}, function(err, route){
+                if(err){
+                    reject(err);
+                }else if(!route){
+                    resolve({
+                        success: false,
+                        message: 'Could not find route'
+                    });
                 }else{
                     resolve({
                         success: true,
