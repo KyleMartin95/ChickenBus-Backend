@@ -18,13 +18,13 @@ var routeSchema = new Schema({
         cost: {type: Currency},
         //stored as UTC
         departureTimes: {
-            sunday: [Number],
-            monday: [Number],
-            tuesday: [Number],
-            wednesday: [Number],
-            thursday: [Number],
-            friday: [Number],
-            saturday: [Number]
+            sunday: [String],
+            monday: [String],
+            tuesday: [String],
+            wednesday: [String],
+            thursday: [String],
+            friday: [String],
+            saturday: [String]
         },
         duration: Number,
         notes: String,

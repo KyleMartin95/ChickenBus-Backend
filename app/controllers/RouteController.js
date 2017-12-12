@@ -111,6 +111,8 @@ var RouteController = {
             var routeDuration = req.body.duration;
             var routeNotes = req.body.notes;
 
+            console.log(routeTimes);
+
             Route.create({
                 type: 'Feature',
                 geometry: {
@@ -121,6 +123,7 @@ var RouteController = {
                     name: routeName,
                     cost: routeCost,
                     duration: routeDuration,
+                    departureTimes: routeTimes,
                     notes: routeNotes
                 }
             }, function(err,route){
