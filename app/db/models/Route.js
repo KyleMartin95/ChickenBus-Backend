@@ -15,7 +15,7 @@ var routeSchema = new Schema({
     },
     properties: {
         name: String,
-        cost: {type: Currency},
+        cost: {type: Number},
         //stored as UTC
         departureTimes: {
             sunday: [String],

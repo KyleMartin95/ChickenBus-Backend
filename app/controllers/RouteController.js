@@ -555,11 +555,20 @@ function findMidpoint(lng1, lat1, lng2, lat2){
 function formatJSON(route){
     return new Promise((resolve, reject) => {
         var routeName = nil(route.Name);
+        console.log(routeName);
         var routeCost = nil(route.Cost);
         var routeDuration = nil(route.Duration);
         var routeNotes = nil(route.Notes);
         var checkedStops = nil(route.Stops);
         var stops = (checkedStops).split(',');
+
+        var sunday = nil(route.Sunday);
+        var monday = nil(route.Monday);
+        var tuesday = nil(route.Tuesday);
+        var wednesday = nil(route.Wednesday);
+        var thursday = nil(route.Thursday);
+        var friday = nil(route.Friday);
+        var saturday = nil(route.Saturday);
 
         var routeStops = [];
         var promises = [];
@@ -585,14 +594,14 @@ function formatJSON(route){
                 stops: formatedStops,
                 name: routeName,
                 cost: routeCost,
-                departureTimes: [-1],
+                times: {sunday, monday, tuesday, wednesday, thursday, friday, saturday},
                 duration: routeDuration,
                 notes: routeNotes
             };
             var obj = {
                 body: data
             };
-            // console.log(data);
+            // console.log(data.times);
             return(obj);
         }).then((formatedJSON) =>{
             if(formatedJSON){
