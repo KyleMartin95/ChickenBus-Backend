@@ -558,6 +558,14 @@ function formatJSON(route){
         var checkedStops = nil(route.Stops);
         var stops = (checkedStops).split(',');
 
+        var sunday = nil(route.Sunday);
+        var monday = nil(route.Monday);
+        var tuesday = nil(route.Tuesday);
+        var wednesday = nil(route.Wednesday);
+        var thursday = nil(route.Thursday);
+        var friday = nil(route.Friday);
+        var saturday = nil(route.Saturday);
+
         var routeStops = [];
         var promises = [];
         var address;
@@ -582,14 +590,14 @@ function formatJSON(route){
                 stops: formatedStops,
                 name: routeName,
                 cost: routeCost,
-                departureTimes: [-1],
+                departureTimes: [sunday, monday, tuesday, wednesday, thursday, friday, saturday],
                 duration: routeDuration,
                 notes: routeNotes
             };
             var obj = {
                 body: data
             };
-            // console.log(data);
+            // console.log(data.departureTimes);
             return(obj);
         }).then((formatedJSON) =>{
             if(formatedJSON){

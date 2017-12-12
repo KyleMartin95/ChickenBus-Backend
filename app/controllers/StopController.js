@@ -109,7 +109,7 @@ module.exports = {
                             }
                         },
                         {
-                            '$match': {'properties.approved': true}
+                            '$match': {$or: [{'properties.approved': true}, {'properties.approved': false}]}
                         },
                         {
                             '$sort':{'distance': 1}
