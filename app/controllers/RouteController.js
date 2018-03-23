@@ -343,7 +343,7 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
                     routeAndStops = {
                         status: 1,
-                        routeId: stopsNearOrig[i].properties.routes,
+                        routeId: stopsNearDest[j].properties.routes,
                         origStop: stopsNearOrig[i],
                         destStop: stopsNearDest[j]
                     };
