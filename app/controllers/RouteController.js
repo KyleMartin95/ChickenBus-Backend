@@ -351,11 +351,12 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
                     };
                   }
                   else{
+                    actualRoute = stopsNearDest[j].properties.routes;
                     routeAndStops = {
                         status: 1,
                         routeId: stopsNearDest[j].properties.routes,
-                        origStop: stopsNearOrig[j],
-                        destStop: stopsNearDest[i]
+                        origStop: stopsNearOrig[i],
+                        destStop: stopsNearDest[j]
                     };
                   }
                     resolve(routeAndStops);
