@@ -351,7 +351,7 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
                     };
                   }
                   else{
-                    actualRoute = stopsNearDest[j].properties.routes;
+                    //actualRoute = stopsNearDest[j].properties.routes;
                     routeAndStops = {
                         status: 1,
                         routeId: stopsNearDest[j].properties.routes,
