@@ -338,22 +338,26 @@ if (typeof (Number.prototype.toDeg) === 'undefined') {
 function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
         var routeAndStops;
-        var actualRoute;
+        //var actualRoute;
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
-                  if(stopsNearOrig[i].properties.routes.origStop.geometry.coordinates.equals(stopsNearOrigin[i]).geometry.coordinates){
-                    actualRoute = stopsNearOrig[i].properties.routes;
-                  }
-                  else{
-                    actualRoute = stopsNearDest[j].properties.routes;
-                  }
+                  if(stopsNearOrig[i].properties.routes.origStop.geometry.coordinates.equals(stopsNearOrigin[i].geometry.coordinates)){
                     routeAndStops = {
                         status: 1,
-                        routeId: actualRoute,
+                        routeId: stopsNearOrig[i].properties.routes,
                         origStop: stopsNearOrig[i],
                         destStop: stopsNearDest[j]
                     };
+                  }
+                  else{
+                    routeAndStops = {
+                        status: 1,
+                        routeId: stopsNearDest[j].properties.routes,
+                        origStop: stopsNearOrig[j],
+                        destStop: stopsNearDest[i]
+                    };
+                  }
                     resolve(routeAndStops);
                 }
             }
