@@ -342,7 +342,8 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
         var number =0;
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
-                if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
+                if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id && number == 0){
+                  console.log("hello");
                     routeAndStops = {
                         status: 1,
                         routeId: stopsNearOrig[i].properties.routes,
