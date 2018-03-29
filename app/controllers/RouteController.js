@@ -338,17 +338,20 @@ if (typeof (Number.prototype.toDeg) === 'undefined') {
 function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
         var routeAndStops;
+        var number;
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
                     routeAndStops = {
                         status: 1,
-                        routeId: stopsNearDest[j].properties.routes,
+                        routeId: stopsNearOrig[i].properties.routes,
                         origStop: stopsNearOrig[i],
                         destStop: stopsNearDest[j]
                     };
-                    resolve(routeAndStops);
+                    number++;
                 }
+                console.log("potential routes:", number);
+                resolve(routeAndStops);
             }
         }
 
