@@ -222,48 +222,6 @@ var RouteController = {
                     }).catch((err) => {
                         reject(err);
                     });
-            }else if(routeAndStops.status === 10){
-                var route1Info, route2Info, route1Stops, route2Stops;
-                RouteController.findById(routeAndStops.routes[0].routeId, true)
-                    .then((route) => {
-                        route1Info = route[0];
-                        return RouteController.findById(routeAndStops.routes[1].routeId, true);
-                    }).then((route) => {
-                        route2Info = route[1];
-                        return RouteController.getStops(route1Info._id, true);
-                    }).then((stops) => {
-                        route1Stops = flipLatLng(stops);
-                        return RouteController.getStops(route2Info._id, true);
-                    }).then((stops) => {
-                        route2Stops = flipLatLng(stops);
-                        var firstRouteOrigDest = GoogleMapsController.getDirections({
-                            orig: routeAndStops.routes[0].origStop.geometry.coordinates,
-                            dest: routeAndStops.routes[0].destStop.geometry.coordinates
-                        });
-                        var secondRouteOrigDest = GoogleMapsController.getDirections({
-                            orig: routeAndStops.routes[1].origStop.geometry.coordinates,
-                            dest: routeAndStops.routes[1].destStop.geometry.coordinates
-                        });
-                        var tripInfo = {
-                            connections: 0,
-                            routesInfo: [route1Info, route2Info],
-                            directions: [
-                                {
-                                    orig: firstRouteOrigDest.origin,
-                                    dest: firstRouteOrigDest.destination,
-                                    stops: route1Stops
-                                },
-                                {
-                                    orig: secondRouteOrigDest.origin,
-                                    dest: secondRouteOrigDest.destination,
-                                    stops: route2Stops
-                                }
-                            ]
-                        };
-                        resolve(tripInfo);
-                    }).catch(err => {
-                        reject(err);
-                    });
             }else{
                 var route1Info, route2Info, route1Stops, route2Stops;
                 RouteController.findById(routeAndStops.routes[0].route1Id, true)
@@ -380,44 +338,21 @@ if (typeof (Number.prototype.toDeg) === 'undefined') {
 function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
         var routeAndStops;
-        var route1;
-        var route2;
         var number=0;
         var potential = [];
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
-                  if(number==0){
-                    route1.push({
-                      routeId: stopsNearOrig[i].properties.routes,
-                      origStop: stopsNearOrig[i],
-                      destStop: stopsNearDest[j]
-                    });
                     routeAndStops = {
                         status: 1,
                         routeId: stopsNearOrig[i].properties.routes,
                         origStop: stopsNearOrig[i],
                         destStop: stopsNearDest[j]
                     };
-                    number=1;
-                  }
-                  else{
-                    route2.push({
-                      routeId: stopsNearOrig[i].properties.routes,
-                      origStop: stopsNearOrig[i],
-                      destStop: stopsNearDest[j]
-                    });
-                    potential[0] = route1;
-                    potential[1] = route2;
-                    routeAndStops =  {
-                      status: 10,
-                      routes: potential
-                    }
-                  }
+                    resolve(routeAndStops);
                 }
             }
         }
-        resolve(routeAndStops);
 
         // no direct route so we look for connecting routes
         findConnection(stopsNearOrig, stopsNearDest, origDestCoords)
