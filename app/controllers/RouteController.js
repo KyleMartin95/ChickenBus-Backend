@@ -338,7 +338,8 @@ if (typeof (Number.prototype.toDeg) === 'undefined') {
 function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
         var routeAndStops;
-        var number;
+        var potentialRoutes = [];
+        var number =0;
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
@@ -348,9 +349,12 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
                         origStop: stopsNearOrig[i],
                         destStop: stopsNearDest[j]
                     };
+                    potentialRoutes[number] = stopsNearOrig[i].properties.routes
                     number++;
                 }
-                console.log("potential routes:", number);
+                console.log("potential route number:", number);
+                console.log("potential routes first:", potentialRoutes[0]);
+                console.log("other potential routes:", potentialRoutes);
                 resolve(routeAndStops);
             }
         }
