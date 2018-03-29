@@ -347,8 +347,8 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
                         origStop: stopsNearOrig[i],
                         destStop: stopsNearDest[j]
                     };
-                    resolve(routeAndStops);
                 }
+                resolve(routeAndStops);
             }
         }
 
