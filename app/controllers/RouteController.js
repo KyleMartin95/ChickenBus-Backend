@@ -338,9 +338,12 @@ if (typeof (Number.prototype.toDeg) === 'undefined') {
 function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
         var routeAndStops;
+        var number=0;
+        var potential = [];
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
+                  console.log("hello");
                     routeAndStops = {
                         status: 1,
                         routeId: stopsNearOrig[i].properties.routes,
@@ -348,9 +351,9 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
                         destStop: stopsNearDest[j]
                     };
                 }
-                resolve(routeAndStops);
             }
         }
+        resolve(routeAndStops);
 
         // no direct route so we look for connecting routes
         findConnection(stopsNearOrig, stopsNearDest, origDestCoords)
