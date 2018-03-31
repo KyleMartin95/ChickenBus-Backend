@@ -233,7 +233,11 @@ var RouteController = {
               }
                 RouteController.findById(routeAndStops.routes[0], true)
                     .then((route) => {
-                        //routeInfo = route[0];
+                        routeInfo[0] = route[0];
+                        routeInfo[1] = route[0];
+                        routeInfo[2] = route[0];
+                        routeInfo[3] = route[0];
+                        routeInfo[4] = route[0];
                         return RouteController.getStops(route[0]._id);
                     }).then((stops) => {
                         stops = flipLatLng(stops);
