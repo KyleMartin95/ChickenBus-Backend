@@ -230,7 +230,7 @@ var RouteController = {
                         reject(err);
                     });
 
-                RouteController.findById(routeAndStops.routeId, true)
+                RouteController.findById(routeAndStops.routes[0], true)
                     .then((route) => {
                         //routeInfo = route[0];
                         return RouteController.getStops(route[0]._id);
