@@ -193,13 +193,46 @@ var RouteController = {
     compileTripInfo: (routeAndStops) => {
         return new Promise((resolve, reject) => {
             var routeInfo;
-
             if(routeAndStops.status === 0){
                 reject('No route found');
             }else if(routeAndStops.status === 1){
                 RouteController.findById(routeAndStops.routeId, true)
                     .then((route) => {
                         routeInfo = route[0];
+                        return RouteController.getStops(route[0]._id);
+                    }).then((stops) => {
+                        stops = flipLatLng(stops);
+                        var origDest = GoogleMapsController.getDirections({
+                            orig: routeAndStops.origStop.geometry.coordinates,
+                            dest: routeAndStops.destStop.geometry.coordinates
+                        });
+                        var tripInfo = {
+                            connections: 0,
+                            routesInfo: [routeInfo],
+                            directions: [
+                                {
+                                    orig: origDest.origin,
+                                    dest: origDest.destination,
+                                    stops: stops
+                                }
+                            ]
+                        };
+                        resolve(tripInfo);
+                    }).catch((err) => {
+                        reject(err);
+                    });
+            }else if(routeAndStops.status === 10){
+              for(routeAndStops.routes){
+                RouteController.findById(routeAndStops.routes[i], true)
+                    .then((route) => {
+                        routeInfo[i] = route[0];
+                    }).catch((err) => {
+                        reject(err);
+                    });
+
+                RouteController.findById(routeAndStops.routeId, true)
+                    .then((route) => {
+                        //routeInfo = route[0];
                         return RouteController.getStops(route[0]._id);
                     }).then((stops) => {
                         stops = flipLatLng(stops);
@@ -343,14 +376,16 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
-                    routeAndStops = {
-                        status: 1,
-                        routeId: stopsNearOrig[i].properties.routes,
-                        origStop: stopsNearOrig[i],
-                        destStop: stopsNearDest[j]
-                    };
-                    resolve(routeAndStops);
+                    potential[number] = stopsNearOrig[i].properties.routes;
+                    number++;
                 }
+                routeAndStops = {
+                    status: 10,
+                    routes: potential,
+                    origStop: stopsNearOrig[i],
+                    destStop: stopsNearDest[j]
+                };
+                resolve(routeAndStops);
             }
         }
 
