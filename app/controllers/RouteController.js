@@ -222,14 +222,14 @@ var RouteController = {
                         reject(err);
                     });
             }else if(routeAndStops.status === 10){
-              for(routeAndStops.routes){
-                RouteController.findById(routeAndStops.routes[i], true)
+              for(var it = 0; it<routeAndStops.routes.length; it++;){
+                RouteController.findById(routeAndStops.routes[], true)
                     .then((route) => {
                         routeInfo[i] = route[0];
                     }).catch((err) => {
                         reject(err);
                     });
-
+              }
                 RouteController.findById(routeAndStops.routes[0], true)
                     .then((route) => {
                         //routeInfo = route[0];
@@ -242,7 +242,7 @@ var RouteController = {
                         });
                         var tripInfo = {
                             connections: 0,
-                            routesInfo: [routeInfo],
+                            routesInfo: routeInfo,
                             directions: [
                                 {
                                     orig: origDest.origin,
