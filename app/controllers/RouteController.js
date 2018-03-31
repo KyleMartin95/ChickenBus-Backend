@@ -225,7 +225,7 @@ var RouteController = {
               for(var it = 0; it<routeAndStops.routes.length; it++;){
                 RouteController.findById(routeAndStops.routes[], true)
                     .then((route) => {
-                        routeInfo[i] = route[0];
+                        routeInfo[it] = route[0];
                     }).catch((err) => {
                         reject(err);
                     });
@@ -372,22 +372,25 @@ function findRoute(stopsNearOrig, stopsNearDest, origDestCoords){
     return new Promise((resolve, reject) => {
         var routeAndStops;
         var number=0;
+        var orig, dest;
         var potential = [];
         for(var i = 0; i < stopsNearOrig.length; i++){
             for(var j = 0; j < stopsNearDest.length; j++){
                 if(stopsNearOrig[i].properties.routes.equals(stopsNearDest[j].properties.routes) && stopsNearOrig[i]._id != stopsNearDest[j]._id){
                     potential[number] = stopsNearOrig[i].properties.routes;
+                    orig = stopsNearOrig[i];
+                    dest = stopsNearDest[j];
                     number++;
                 }
-                routeAndStops = {
-                    status: 10,
-                    routes: potential,
-                    origStop: stopsNearOrig[i],
-                    destStop: stopsNearDest[j]
-                };
-                resolve(routeAndStops);
             }
         }
+        routeAndStops = {
+            status: 10,
+            routes: potential,
+            origStop: orig,
+            destStop: dest
+        };
+        resolve(routeAndStops);
 
         // no direct route so we look for connecting routes
         findConnection(stopsNearOrig, stopsNearDest, origDestCoords)
