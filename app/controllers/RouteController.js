@@ -223,16 +223,16 @@ var RouteController = {
                     });
             }else if(routeAndStops.status === 10){
                 var routeInfo = [];
-                var i = 0;
-                routeAndStops.routes.forEach(function(routeId) {
-                  console.log(routeId);
-                  RouteController.findById(routeId, true).then((route) => {
-                     routeInfo[i] = route[0];
-                     i++;
-                    }).catch((err) => {
-                      reject(err);
-                    });
-                });
+                var j = 0;
+                for(var i = 0; i<routeAndStops.routes.length; i++){
+                  RouteController.findById(routeAndStops.routes[i], true)
+                      .then((route) => {
+                          routeInfo[j] = route[0];
+                          j++;
+                      }).catch((err) => {
+                          reject(err);
+                      });
+                }
                 RouteController.findById(routeAndStops.routes[0], true)
                     .then((route) => {
                         routeInfo[0] = route[0];
