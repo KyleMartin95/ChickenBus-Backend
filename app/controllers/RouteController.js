@@ -222,22 +222,24 @@ var RouteController = {
                         reject(err);
                     });
             }else if(routeAndStops.status === 10){
-              var routeInfo = [];
-              for(var it = 0; it<routeAndStops.routes.length; it++){
-                RouteController.findById(routeAndStops.routes[it], true)
-                    .then((route) => {
-                        routeInfo[it] = route[0];
+                var routeInfo = [];
+                var i = 0;
+                routeAndStops.routes.forEach(function(routeId) {
+                  console.log(routeId);
+                  RouteController.findById(routeId, true).then((route) => {
+                     routeInfo[i] = route[0];
+                     i++;
                     }).catch((err) => {
-                        reject(err);
+                      reject(err);
                     });
-              }
+                });
                 RouteController.findById(routeAndStops.routes[0], true)
                     .then((route) => {
                         routeInfo[0] = route[0];
-                        routeInfo[1] = route[0];
-                        routeInfo[2] = route[0];
-                        routeInfo[3] = route[0];
-                        routeInfo[4] = route[0];
+                        //routeInfo[1] = route[0];
+                        //routeInfo[2] = route[0];
+                        //routeInfo[3] = route[0];
+                        //routeInfo[4] = route[0];
                         return RouteController.getStops(route[0]._id);
                     }).then((stops) => {
                         stops = flipLatLng(stops);
