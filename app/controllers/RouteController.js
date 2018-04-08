@@ -233,9 +233,9 @@ var RouteController = {
                           reject(err);
                       });
                 }
-                RouteController.findById(routeAndStops.routes[0], true)
+                RouteController.findById(routeInfo[0], true)
                     .then((route) => {
-                        routeInfo[0] = route[0];
+                        //routeInfo[0] = route[0];
                         //routeInfo[1] = route[0];
                         //routeInfo[2] = route[0];
                         //routeInfo[3] = route[0];
