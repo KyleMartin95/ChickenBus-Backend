@@ -240,7 +240,7 @@ var RouteController = {
                         //routeInfo[2] = route[0];
                         //routeInfo[3] = route[0];
                         //routeInfo[4] = route[0];
-                        return RouteController.getStops(route[0]._id);
+                        return RouteController.getStops(route._id);
                     }).then((stops) => {
                         stops = flipLatLng(stops);
                         var origDest = GoogleMapsController.getDirections({
