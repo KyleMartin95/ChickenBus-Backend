@@ -227,8 +227,10 @@ var RouteController = {
                 for(var i = 0; i<routeAndStops.routes.length; i++){
                   RouteController.findById(routeAndStops.routes[i], true)
                       .then((route) => {
+                        if (route[0] != null){
                           routeInfo[j] = route[0];
                           j++;
+                        }
                       }).catch((err) => {
                           reject(err);
                       });
