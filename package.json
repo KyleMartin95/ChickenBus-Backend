@@ -20,25 +20,25 @@
   },
   "homepage": "https://github.com/KyleMartin95/ChickenBus-Backend#readme",
   "dependencies": {
-    "@google/maps": "^0.4.5",
+    "@google/maps": "^0.4.6",
     "bcrypt": "^1.0.3",
-    "body-parser": "^1.18.0",
+    "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
-    "express": "^4.15.4",
+    "express": "^4.16.4",
     "express-validator": "^4.3.0",
-    "jsonwebtoken": "^8.1.0",
-    "mongodb": "^2.2.31",
-    "mongoose": "^4.11.13",
+    "jsonwebtoken": "^8.3.0",
+    "mongodb": "^2.2.36",
+    "mongoose": "^4.13.17",
     "mongoose-currency": "^0.2.0",
-    "mysql2": "^1.4.2",
+    "mysql2": "^1.6.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "sequelize": "^4.8.3",
+    "sequelize": "^4.39.0",
     "sequelize-cli": "^3.0.0-2"
   },
   "devDependencies": {
-    "eslint": "^4.6.1",
-    "morgan": "^1.8.2",
-    "nodemon": "^1.12.0"
+    "eslint": "^4.19.1",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.4"
   }
 }

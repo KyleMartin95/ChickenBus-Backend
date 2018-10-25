@@ -52,6 +52,7 @@ process.once('SIGUSR2', function(){
     });
 });
 
+//prototype
 require('./models/Route.js');
 require('./models/Stop.js');
 require('./models/User.js');
