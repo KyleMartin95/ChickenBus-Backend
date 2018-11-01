@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
+console.log("new start server");
 
-console.log(process.env.MONGODB_SERVICE_HOST+ ' ' + process.env.MONGODB_SERVICE_PORT + ' ' + process.env.MONGODB_USER + ' ' + process.env.MONGODB_PASSWORD + ' ' + process.env.MONGODB_NAME);
+//not necessary
+//console.log(process.env.MONGODB_SERVICE_HOST+ ' ' + process.env.MONGODB_SERVICE_PORT + ' ' + process.env.MONGODB_USER + ' ' + process.env.MONGODB_PASSWORD + ' ' + process.env.MONGODB_NAME);
 
 var connectionURI;
+//not likely
 if(process.env.NODE_ENV == 'production'){
     connectionURI = 'mongodb://' + process.env.MONGODB_SERVICE_HOST + ':' + process.env.MONGODB_SERVICE_PORT + '/' + process.env.MONGODB_NAME;
     var connectionOptions = {
@@ -11,12 +14,16 @@ if(process.env.NODE_ENV == 'production'){
     };
     mongoose.connect(connectionURI, connectionOptions);
 }else{
-    connectionURI = 'mongodb://127.0.0.1:27017/chickenbus';
+    connectionURI = 'mongodb://127.0.0.1:27017/chickenbus?authSource=chickenbus';
     var connectionOptions = {
         user: 'userVCU',
         pass: 'VAoaFA1OA8whAKGc'
     };
-    mongoose.connect(connectionURI, connectionOptions);
+    mongoose.connect(connectionURI, connectionOptions).then(function(){
+        console.log("Mongo success");
+    }).catch(function(err) {
+        console.log("Mongo Fail");
+    });
 }
 
 mongoose.connection.on('connected', function(){

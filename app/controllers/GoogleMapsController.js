@@ -6,7 +6,7 @@ const StopController = require('./StopController');
 const RouteController = require('./RouteController');
 
 const googleMapsClient = require('@google/maps').createClient({ //Google client and key needed to access map api
-    key: 'AIzaSyAbiwYsHl4MCJ1-Dwkcc3uChWMmYjv5Qp4'
+    key: 'AIzaSyA5Z5W-SEgAILNM-cFDdWb1ZS9Xtp740_w'
 });
 
 var GoogleMapsController = {
@@ -29,7 +29,7 @@ var GoogleMapsController = {
     },
 
     /**
-     * swap coordinate format of longitude and latitude 
+     * swap coordinate format of longitude and latitude
      */
     getDirections: (stops) => {
         var orig = [];
